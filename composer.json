@@ -1,0 +1,21 @@
+{
+    "name": "mmirrev/test",
+    "description": "test",
+    "authors": [
+        {
+            "name": "MaxiM",
+            "email": "mmirrev@mail.ru"
+        }
+    ],
+    "require": {
+        "twig/twig": " 1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "src\\": "Filemanager"
+        },
+        "files": [
+            "config/Conf.php"
+        ]        
+    }
+}
