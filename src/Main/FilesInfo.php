@@ -1,6 +1,4 @@
 <?php	
-
-    //namespace Filemanager\Main\FilesInfo;
     
 	function getFilesInfo($filePaths) 
 	{
@@ -14,11 +12,13 @@
 			if ($fileName == '.' || $fileName == '..') { continue; }
 			$type = is_dir($path) ? 'folders' : 'files';
 			$fileСhangeDate = date("d.m.Y H:i:s", filemtime($path));
+			$classNewFile = time() - filemtime($path) < 60 ? 'new-file' : '';
 			$relUrl = str_replace(ROOT, '', $path);
 			$size = sprintf("%u", filesize($path));
             
             $dataSet[$type][$fileName]['path'] = $path;
 			$dataSet[$type][$fileName]['fileСhangeDate'] = $fileСhangeDate;
+			$dataSet[$type][$fileName]['classNewFile'] = $classNewFile;
 			
 			if ($type == 'folders') {
 				$dataSet[$type][$fileName]['url'] = "?url={$relUrl}/";
@@ -89,9 +89,4 @@
         	}	
     	}
     	return implode('', $content);
-	}
-	
-	function getFilePos($dir, $fName)
-	{
-	    return array_search($fName, scandir("{$dir}")) - 2;
 	}

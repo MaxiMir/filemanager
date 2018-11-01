@@ -1,6 +1,4 @@
 <?php
-
-	//namespace Filemanager\Main\Render;
 	
     require FM_PATH. 'vendor/Twig/Autoloader.php';
     
@@ -14,7 +12,7 @@
 			
 			if ($tmpl == '404.php') {
 				return $template->render([]);			    
-			} elseif ($tmpl == 'table_files.twig' || $tmpl == 'table_folders.twig') {
+			} elseif ($tmpl == 'table_files.twig') {
 				return $template->render(['contentData' => $contentData]);
 			} else {
 				return $template->render([

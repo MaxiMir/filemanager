@@ -1,15 +1,14 @@
 <?php
 
-    namespace Filemanager\Utils\RenameFile;
-
 	require_once "../config/Conf.php";
 	require_once "../Main/PathInfo.php";
 	require_once "../Main/FilesInfo.php";
 	require_once "../Main/Render.php";
 
-	$data = ['msg' => '', 'result' => 'error'];
-	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);
-	$parentDir = ROOT . $relativePath;
+	$data = [
+			  'msg' => '',
+			  'result' => 'error'
+			];
 
 	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 		$data['msg'] = "Incorrect method of sending data.<br>";
@@ -17,7 +16,8 @@
     	$oldName = $_POST['oldName'];
     	$newName = $_POST['newName'];
     	$type = $_POST['type'];
-    	$template = $type == 'folder' ? 'table_folders.twig' : 'table_files.twig';
+    	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);
+    	$parentDir = ROOT . $relativePath;	    
     	$sep = $type == 'folder' ? SEP : '';
     	$pathOldFile = $parentDir . $oldName . $sep;
     	$pathNewFile = $parentDir . $newName . $sep;
@@ -32,8 +32,8 @@
 			$data['msg'] .= "File name not consist '/' <br>";
 		}
 
-		if ($relativePath == '' || !is_dir(ROOT . $relativePath)) {
-			$data['msg'] .= "Path is incorrect <br>";
+		if ($relativePath == '' || !is_dir($parentDir)) {
+			$data['msg'] .= "Path is incorrect: '{$parentDir}' <br>";
 		}
 
 		if (file_exists($pathNewFile)) {
@@ -45,8 +45,9 @@
 		        $data['msg'] = 'Failed to rename file';
 		    } else {
 		        $data['result'] = 'success';
-				$contentData = getFilesInfo([$pathNewFile]);
-				//$data['htmlFiles'] = render($template, $contentData);	
+	        	$filesPaths = glob($parentDir . '{,.}*', GLOB_BRACE);
+				$contentData = getFilesInfo($filesPaths);
+				$data['html'] = render('table_files.twig', $contentData);				
 		    }
 		}	
 	}

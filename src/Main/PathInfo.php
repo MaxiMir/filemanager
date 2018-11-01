@@ -1,7 +1,5 @@
 <?php
 
-	//namespace Filemanager\Main\PathInfo;
-
 	function isMainPage() 
 	{
 		return $_SERVER['REQUEST_URI'] == '/'.FM_FOLDER.'/';

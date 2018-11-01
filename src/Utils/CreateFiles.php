@@ -15,8 +15,9 @@
 	} else {
 		$name = $_POST['name'];
 		$type = $_POST['type'];
+		$isDir = $type == 'folder' ? true : false;
+		$sep = $isDir ? SEP : '';
 		$relativePath = getRelPath($_SERVER['HTTP_REFERER']);
-		$sep = $type == 'folder' ? SEP : '';
 		$parentDir = ROOT . $relativePath;
 		$pathNewFile = $parentDir . $name . $sep;
 		
@@ -28,10 +29,6 @@
 			$data['msg'] .= "File name not consist '/' <br>";
 		}
 
-		if ($type !== 'file' && $type !== 'folder') {
-			$data['msg'] .= "Filetype is incorrect <br>";
-		}	
-		
 		if (file_exists($pathNewFile)) {
 			$data['msg'] .= "File with name '{$name}' already exist";
 		}
@@ -41,26 +38,18 @@
 		}
 
 		if ($data['msg'] == '') {
-			if ($type == 'folder') {
-				if (!mkdir($pathNewFile)) {
-    				$data['msg'] .= "Could not create folder {$name}";
-				} else {
-					$data['result'] = "success";
-					$contentData = getFilesInfo([$pathNewFile]);
-					$data['html'] = render('table_folders.twig', $contentData);
-					$data['filePos'] = getFilePos($parentDir, $name);
-				}				
-			} elseif ($type == 'file') {
-				if (!touch($pathNewFile)) {
-					$data['msg'] .= "Could not create file {$name}";
-				} else {
-					$data['result'] = "success";
-					$contentData = getFilesInfo([$pathNewFile]);
-					$data['filePos'] = getFilePos($parentDir, $name);						
-				}				
-			}
-		}	
+		    $resOper = $isDir ? mkdir($pathNewFile) : touch($pathNewFile);
+		    
+		    if(!$resOper) {
+		        $data['msg'] .= "Could not create file '{$name}'";    
+		    } else {
+	        	$data['result'] = "success";
+	        	$filesPaths = glob($parentDir . '{,.}*', GLOB_BRACE);
+				$contentData = getFilesInfo($filesPaths);
+				$data['html'] = render('table_files.twig', $contentData);
+		    }	
+	    }
 	}
-
+	
 	header('Content-Type: application/json');
 	echo json_encode($data);

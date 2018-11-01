@@ -1,7 +1,42 @@
+{%for name, data in contentData['folders']%}
+    <tr class="file_field">
+        <td class="type_img text-center ">
+            <a href="{{ data.url }}" title="view" class="type_img-a {{ data.classNewFile }}">
+                <img src="css/img/folder.png" width="40px">
+            </a>    
+        </td>
+        <td class="link-file text-left">
+            <a href="{{ data.url }}" data-name="{{ name }}" data-type="folder" title="view" class="badge badge-info link_files">{{ name }}</a>
+        </td>
+        <td></td>
+        <td>{{ data.fileСhangeDate }}</td>
+        <td>
+            <a href="javascript:void(0);" data-toggle="tooltip" title="rename {{ name }}" data-action="rename" data-name="{{ name }}" data-url="{{ data.path }}" class="btn">
+                <img src="css/img/control/edit.png" width="40px" class="control_item" alt="icon rename">
+            </a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" data-toggle="tooltip" title="copy {{ name }}" data-url="{{ data.path }}">
+                <img src="css/img/control/copy.png" class="control_item" width="40px" alt="icon copy">
+            </a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" data-toggle="tooltip" title="move {{ name }}" data-url="{{ data.path }}">
+                <img src="css/img/control/move.png" class="control_item" width="40px" alt="icon move">
+            </a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" data-toggle="tooltip" title="delete {{ name }}" data-url="{{ data.path }}">
+                <img src="css/img/control/delete.png" class="control_item" width="40px" alt="icon delete">
+            </a>
+        </td>           
+    </tr>
+{%endfor%}
+
 {%for name, data in contentData['files']%}
    <tr class="file_field">
       <td class="type_img align-middle">
-         <a href="{{ data.url }}" title="view">
+         <a href="{{ data.url }}" title="view" class="type_img-a {{ data.classNewFile }}">
             <img src="{{ data.img }}" width="40px" class="rounded">
          </a>
       <td class="link-file text-left">

@@ -141,7 +141,7 @@ class User
 	}
 }
 
-// А значит можно использовать трейт:
+// Реализация метода executeSql в классах индентична, а значит можно использовать трейт:
 
 trait BaseModel
 {
@@ -150,30 +150,188 @@ trait BaseModel
 	{
 		return $this->sql;	
 	}
+
+	public function selectAllFromDB()
+	{
+		$this->sql = 'SELECT * FROM' . $this->getTableName();
+	}	
+
+	abstruct public function getTableName(): string;
 }
 
 class Article
 {
 	use BaseModel; // можно перечислить несколько трейтов через ','
-	public function setSql()
+	public function getTableName()
 	{
-		$this->sql = 'SELECT * FROM articles';
+		return 'articles';
 	}
 }
 
 class User 
 {
 	use BaseModel;
-	public function setSql()
+	public function getTableName()
 	{
-		$this->sql = 'SELECT * FROM users';
-	}		
+		return 'users';
+	}
+	
 }
 
 $article = new Article();
-$article->setSql();
+$article->selectAllFromDB();
 echo $article->executeSql(); // => SELECT * FROM articles
 
 $user = new User();
-$user->setSql();
+$user->selectAllFromDB();
 echo $user->executeSql(); // => SELECT * FROM users
+
+
+require 'vendor/autoload.php';
+
+class User
+{
+	public $sql;
+
+	public function addUser(string $login, string $password)
+	{
+		if(strlen($login) < 3 || strlen($login) > 15) {
+			return false;
+		}
+
+		if(strlen($password) < 3 || strlen($password) > 6) {
+			return false;
+		}
+
+		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
+
+		return true;
+	}
+}
+
+$user = new User();
+$result = $user->addUser('Misha', '1234');
+if ($result === true) {
+	echo 'user was added';
+} else {
+	echo 'fail';
+}
+
+// Тоже самое использую Exceptions:
+
+class User
+{
+	public $sql;
+
+	public function addUser(string $login, string $password)
+	{
+		if(strlen($login) < 3 || strlen($login) > 15) {
+			throw new Exception('Wrong login');
+		}
+		
+		if(strlen($password) < 3 || strlen($password) > 6) {
+			hrow new Exception('Wrong password');
+		}
+
+		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
+		
+		return true;
+	}
+}
+
+try {
+	$user = new User();
+	$result = $user->addUser('Misha', '1234');
+	echo 'user was added';	
+} catch(Exception $e) {
+	die('Fail');
+}
+
+
+// Чтобы каждый раз не писать конструкцию try/catch лучше создать отдельный класс:
+
+class UserLoginException extends Exception
+{
+	
+}
+
+class UserPasswordException extends Exception
+{
+	
+}
+
+class User
+{
+	public $sql;
+
+	public function addUser(string $login, string $password)
+	{
+		if(strlen($login) < 3 || strlen($login) > 15) {
+			throw new UserLoginException;
+		}
+
+		if(strlen($password) < 3 || strlen($password) > 6) {
+			throw new UserPasswordException;
+		}
+
+		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
+		
+		return true;
+	}
+}
+
+try {
+	$user = new User();
+	$result = $user->addUser('Misha', '1234');
+	echo 'user was added';	
+} catch(UserLoginException $e) {
+	die('Wrong login');
+} catch(UserPasswordException $e) {
+	die('Wrong password');
+}
+
+
+// В этом варианте получается много catch, поэтому:
+
+class UserException extends Exception
+{
+    
+}
+
+class UserLoginException extends UserException
+{
+	$protected $message = 'wrong login';
+}
+
+class UserPasswordException extends UserException
+{
+	$protected $message = 'wrong password';	
+}
+
+class User
+{
+	public $sql;
+
+	public function addUser(string $login, string $password)
+	{
+		if(strlen($login) < 3 || strlen($login) > 15) {
+			throw new UserLoginException;
+		}
+
+		if(strlen($password) < 3 || strlen($password) > 6) {
+			throw new UserPasswordException;
+		}
+
+		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
+		
+		return true;
+	}
+}
+
+try {
+	$user = new User();
+	$result = $user->addUser('Misha', '1234');
+	echo 'user was added';	
+} catch(UserException $e) {
+	die($e->getMessage());
+}

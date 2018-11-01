@@ -3,7 +3,9 @@ $(function () {
 
 	$('[data-toggle="tooltip"]').tooltip();
 
-    // handler: create files
+    /**
+     * handler: create files 
+     */     
 	$('.create_files input[type=text]').on('blur', function () {
 		var
 			$inputVal = $(this).val(),
@@ -28,7 +30,7 @@ $(function () {
 			$inputVal = $input.val(),
 			$btnSubmit = $currForm.find("button[type='submit']"),
 			$btnClose = $currForm.find("button[data-dismiss='modal']"),
-			$type = $input.attr('name') == 'fileName' ? 'file' : 'folder',
+			$type = $input.attr('data-type');
 			$isValidForm = false;
 
 		$errorField.empty();
@@ -56,14 +58,8 @@ $(function () {
 						$errorField.html(data['msg']);
 					} else {
 						$btnClose.trigger('click');
-						$msg
-							.text('The file "' + $inputVal + '" was created successfully')
-							.show()
-							.delay(1500)
-							.hide(300);
-						if (data['html']) {
-					        $('#table_files .file_field').get(data['filePos']).after(data['html']);
-						}
+						$('#table_files tbody').html(data['html']);
+						showThenHideMsg('The file "' + $inputVal + '" was created successfully');
 					}
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
@@ -75,7 +71,10 @@ $(function () {
 			});
 		}
 	});
-
+	
+    /**
+     * handler: uploads files 
+     */ 
 	$('#formUploadsFiles').on('submit', function (e) {
 		var
 			$form = $(this),
@@ -130,18 +129,12 @@ $(function () {
 						$errorField.html(data['msg']);
 					} else {
 						$btnClose.trigger('click');
-						$msg
-							.html(data['msg'])
-							.show()
-							.delay(1500)
-							.hide(300);
-						if (data['htmlFiles']) {
-							$('#table_files').prepend(data['htmlFiles']);
-						}
+					    showThenHideMsg(data['msg']);
+                        $('#table_files tbody').html(data['html']);
 					}
 				},
 				error: errorHandler = function () {
-					$errorField.text('Error loading files');
+					$errorField.text('Error loading files...');
 				},
 				complete: function (data) {
 					setTimeout(function () {
@@ -155,7 +148,10 @@ $(function () {
 			});
 		}
 	});
-
+	
+    /**
+     * handler: uploads files 
+     */ 
 	$('#table_files').on('click', '[data-action="rename"]', function (e) {
 		e.preventDefault();
 
@@ -188,25 +184,18 @@ $(function () {
 			$trFile = $renameHtml.parent('tr');
 			$type = $linkFile.attr('data-type'),
 			$iconRename = $('[data-type="rename"], [data-name="' + $oldName + '"]');
-		if ($(this).hasClass('btn-ok')) {
+			
+		if ($(this).hasClass('btn-cancel')) {
+			$renameHtml.remove();
+		    $linkFile.fadeIn('fast');
+		    $iconRename.removeClass('disabled');
+		} else {
 			if ($.trim($newName) === '') {
-				$msg
-					.text('Not valid filename!')
-					.show()
-					.delay(1500)
-					.hide(300);
+			    showThenHideMsg('Not valid filename!');
 			} else if (!isValidName($newName)) {
-				$msg
-					.text('It is recommended not to use these symbols: "! @ # $ & ~ % * ( ) [ ] { } \' \" \\ : ; > < ` " and space in the file name')
-					.show()
-					.delay(1500)
-					.hide(300);
+				showThenHideMsg('It is recommended not to use these symbols: "! @ # $ & ~ % * ( ) [ ] { } \' \" \\ : ; > < ` " and space in the file name');
 			} else if ($newName === $oldName) {
-				$msg
-					.text('File names are not individual')
-					.show()
-					.delay(1500)
-					.hide(300);
+				showThenHideMsg('File names are not individual');
 			} else {
 				$.post({
 					url: 'Utils/RenameFile.php',
@@ -218,22 +207,18 @@ $(function () {
 					},
 					success: function (data) {
 						if (data['result'] == 'error') {
-						    $msg.text(data['msg']);
+						    showThenHideMsg(data['msg']);
 						} else {
-						    $trFile.html(data['htmlFile']);
+						    $('#table_files tbody').html(data['html']);
                             $msg.text('File successfully renamed');
 						}
 					},
 					error: errorHandler = function () {
-						$msg.text('Error renaming file');
+						showThenHideMsg('Error renaming file');
 					}
 				});
-			}
+			}		    
 		}
-
-		$renameHtml.remove();
-		$linkFile.fadeIn('fast');
-		$iconRename.removeClass('disabled');
 	});
 });
 
@@ -250,4 +235,13 @@ function changeProgressBar(e) {
 			.css('width', $progress + '%')
 			.attr('aria-valuenow', $progress);
 	}
+}
+
+function showThenHideMsg(msg)
+{
+    $('.main-message')
+                      .text(msg)
+                      .show()
+                      .delay(1500)
+                      .hide(300);
 }

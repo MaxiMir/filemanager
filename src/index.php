@@ -9,23 +9,21 @@
 	
 	$currPath = getCurrPath();
 	$filesPaths = glob($currPath . '{,.}*', GLOB_BRACE);
-	$template = chooseTemplate($currPath);
+	$tmpl = chooseTemplate($currPath);
 	$header = getHeader($currPath);
 	$breadcrumbs = generateBreadcrumbs($currPath, $template);
-	
-	if ($template == 'file.twig') {
-		$contentData = getFileInfo($currPath);
-	} else {
-		$contentData = getFilesInfo($filesPaths);
-	}
+	$contentData = $tmpl == 'file.twig' ? getFileInfo($currPath) : getFilesInfo($filesPaths);
 
-	print render($template, $contentData, $header, $breadcrumbs);
-    	
-#  Загрузка новых файлов в текущую директорию
-# Файлы и папки с одинаковыми названиями
-# ? правильная структура и подключение файлов из /actions
-# анимация загрузки
-# вставка новых файлов
-# верстка
-# роутинг
-# 404 c сохранением урла
+	print render($tmpl, $contentData, $header, $breadcrumbs);
+	
+/* TODO:   
+    * картинки без перехода на страницу + превью.
+    *  Загрузка новых файлов в текущую директорию
+    * Файлы и папки с одинаковыми названиями
+    * ? правильная структура и подключение файлов из /actions
+    * анимация загрузки
+    * вставка новых файлов
+    * верстка
+    * роутинг
+    * 404 c сохранением урла
+*/
