@@ -1,7 +1,7 @@
 {%for name, data in contentData['folders']%}
     <tr class="file_field">
         <td class="type_img text-center ">
-            <a href="{{ data.url }}" title="view" class="type_img-a {{ data.classNewFile }}">
+            <a href="{{ data.url }}" title="view" class="type_img-d {{ data.classNewFile }}">
                 <img src="css/img/folder.png" width="40px">
             </a>    
         </td>
@@ -26,7 +26,7 @@
             </a>
         </td>
         <td>
-            <a href="javascript:void(0);" data-toggle="tooltip" title="delete {{ name }}" data-url="{{ data.path }}">
+            <a href="javascript:void(0);" data-toggle="tooltip" title="delete {{ name }}" data-action="delete" data-url="{{ data.path }}">
                 <img src="css/img/control/delete.png" class="control_item" width="40px" alt="icon delete">
             </a>
         </td>           
@@ -36,7 +36,7 @@
 {%for name, data in contentData['files']%}
    <tr class="file_field">
       <td class="type_img align-middle">
-         <a href="{{ data.url }}" title="view" class="type_img-a {{ data.classNewFile }}">
+         <a href="{{ data.url }}" title="view" class="type_img-f {{ data.classNewFile }}">
             <img src="{{ data.img }}" width="40px" class="rounded">
          </a>
       <td class="link-file text-left">
@@ -60,7 +60,7 @@
          </a>
       </td>
       <td>
-         <a href="javascript:void(0);" data-toggle="tooltip" title="delete {{ name }}" data-url="{{ data.path }}">
+         <a href="javascript:void(0);" data-toggle="tooltip" title="delete {{ name }}" data-action="delete" data-url="{{ data.path }}">
             <img src="css/img/control/delete.png" class="control_item" width="40px" alt="icon delete">
          </a>
       </td>
