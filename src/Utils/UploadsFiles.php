@@ -5,19 +5,18 @@
 	require_once "../Main/FilesInfo.php";
 	require_once "../Main/Render.php";	
 
-	ini_set('post_max_size', '500M');
-	ini_set('upload_max_filesize', '400M');
-	ini_set('max_execution_time', '3000');
-	ini_set('max_input_time', '6000');
+	ini_set('post_max_size', '1000M'); // максимально допустимый размер данных, отправляемых POST-ом
+	ini_set('upload_max_filesize', '500M'); // максимальный размер закачиваемого файла
+	ini_set('max_file_uploads', "500"); 
+	ini_set('max_execution_time', '3000'); // максимальное время в секундах, в течение которого скрипт должен полностью загрузиться
+	
 
 	$data = [
 			  'msg' => '',
 			  'result' => 'error'
 			];
 
-	if (empty($_FILES)) {
-		$data['msg'] .= "Files not found  <br>";
-	} else {
+	if (!empty($_FILES)) {
     	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);
 	    $uploadDir = ROOT . $relativePath;
 	    $pathNewFiles = [];
@@ -33,10 +32,9 @@
 			
 			if ($data['msg'] == '') {
 				$data['result'] = 'success';
-				$data['msg'] = 'Download successful';
 	        	$filesPaths = glob($uploadDir . '{,.}*', GLOB_BRACE);
 				$contentData = getFilesInfo($filesPaths);
-				$data['html'] = render('table_files.twig', $contentData);					
+				$data['content'] = render('table_files.twig', $contentData);					
 			}
 		}
 	}

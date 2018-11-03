@@ -25,8 +25,8 @@
 			$data['msg'] .= "File name is empty <br>";
 		} elseif (strlen($name) > 255) {
 			$data['msg'] .= "File name is too long <br>";
-		} elseif (strpos($name, '/') !== false) {
-			$data['msg'] .= "File name not consist '/' <br>";
+		} elseif (!isValidName($name)) {
+			$data['msg'] .= "It is recommended not to use these symbols: '! @ # $ & ~ % * ( ) [ ] { } ' \" \\ / : ; > < `' and space in the file name <br>";
 		}
 
 		if (file_exists($pathNewFile)) {
@@ -46,7 +46,7 @@
 	        	$data['result'] = "success";
 	        	$filesPaths = glob($parentDir . '{,.}*', GLOB_BRACE);
 				$contentData = getFilesInfo($filesPaths);
-				$data['html'] = render('table_files.twig', $contentData);
+				$data['content'] = render('table_files.twig', $contentData);
 		    }	
 	    }
 	}

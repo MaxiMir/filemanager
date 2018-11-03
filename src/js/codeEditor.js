@@ -2,10 +2,10 @@ $(function () {
 	$('[data-toggle="tooltip"]').tooltip();
 
 	var editor = ace.edit('editor'),
-		mode = setEditorMode();
-	source = editor.getValue();
-
-	editor.session.setMode('ace/mode/' + mode);
+		mode = setEditorMode(),
+	    source = editor.getValue();
+    
+	editor.session.setMode('ace/mode/' + mode)
 	editor.setOptions({
 		minLines: 15,
 		autoScrollEditorIntoView: true,
@@ -63,7 +63,7 @@ $(function () {
 
 	$('.lamp').on('click', function () {
 		if ($(this).is(':checked')) {
-			editor.setTheme('ace/theme/dracula');
+			editor.setTheme('ace/theme/ambiance');
 		} else {
 			editor.setTheme('ace/theme/eclipse');
 		}

@@ -1,7 +1,16 @@
+.type_img {
+    position: relative;
+}
+
 .new-file::after {
     content: '';
     position: absolute;
-    left: 40px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    margin-top: 10%;  
     width: 40px;
     height: 40px;
     background: url("/src/css/img/new-file.png") no-repeat center;

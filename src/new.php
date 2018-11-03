@@ -335,3 +335,109 @@ try {
 } catch(UserException $e) {
 	die($e->getMessage());
 }
+
+
+PHP PDO: Работа с базой данных
+#  Соединение с базой данных
+
+namespace Theory
+
+$opt = [
+	\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION	// режим ошибок - Exceptions	
+	   ];
+
+/* $dsn = "mysql:host=$host;dbname=$db;charset=$charset"; // Формат описывающий параметры для подключения */
+
+$pdo = new \PDO('sqlite::memory', null, null, $opt); // 2-й, 3-й параметр логин и пароль.
+
+$pdo->exec("create table users (id integer, name string)");	   
+$pdo->exec("insert into users values(3, 'adel')");	   
+$pdo->exec("insert into users (7, 'ada')");	   
+$data = $pdo->query("select * from users")->fetchAll();
+print_r($data);
+
+
+
+
+/**
+Реализуйте интерфейс App\DDLManagerInterface в классе App\DDLManager
+
+Пример использования:
+**/
+
+$dsn = 'sqlite::memory:';
+$ddl = new DDLManager($dsn);
+
+$ddl->createTable('users', [
+    'id' => 'integer',
+    'name' => 'string'
+]);
+
+// Получившийся запрос в базу:
+
+CREATE TABLE users (
+    id integer,
+    name string
+);
+
+
+
+namespace App;
+
+interface DDLManagerInterface
+{
+    public function __construct($dsn, $user = null, $pass = null);
+
+    public function createTable($table, array $params);
+}
+
+
+namespace App;
+
+class DDLManager implements DDLManagerInterface
+{
+    private $pdo;
+
+    public function __construct($dsn, $user = null, $pass = null)
+    {
+        $options = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION];
+        $this->pdo = new \PDO($dsn, $user, $pass, $options);
+    }
+
+    public function createTable($table, array $params)
+    {
+        $fieldParts = array_map(function ($key, $value) {
+            return "{$key} {$value}";
+        }, array_keys($params), $params);
+        $fieldsDescription = implode(", ", $fieldParts);
+        $sql = sprintf("CREATE TABLE %s (%s)", $table, $fieldsDescription);
+        return $this->pdo->exec($sql);
+    }  
+
+    public function getConnection()
+    {
+        return $this->pdo;
+    }
+}
+
+#  Безопасность при работе с внешними данными
+
+// WRONG!!!
+
+$id = 7;
+$name = 'ada';
+$pdo->exec("insert into users values ($id, '$name')");
+
+// SQL INJECTION:
+/* $name = 'ada'); DELETE FROM users; --"; */
+/* $sql = "insert into users values ($id, '$name')"; */
+/* print_r($sql); */
+/* $pdo->exec($sql); */
+
+
+/* $values = [3, 'm\'ark --']; */
+/* $data = implode(', ', array_map(function ($item) use ($pdo) { */
+/*	return $pdo->quote($item); */
+/* }, $values); */
+
+$data = $pdo->query("select * from users")->fetchAll();
