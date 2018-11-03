@@ -12,7 +12,7 @@
 			if ($fileName == '.' || $fileName == '..') { continue; }
 			$type = is_dir($path) ? 'folders' : 'files';
 			$fileСhangeDate = date("d.m.Y H:i:s", filemtime($path));
-			$classNewFile = time() - filemtime($path) < 60 ? 'new-file' : '';
+			$classNewFile = time() - filemtime($path) < TIME_NEW_FILE_SEC ? 'new-file' : '';
 			$relUrl = str_replace(ROOT, '', $path);
 			$size = sprintf("%u", filesize($path));
             
@@ -90,3 +90,14 @@
     	}
     	return implode('', $content);
 	}
+	
+	function isValidName($name)
+	{
+	    foreach(STOP_SYMBOLS as $symbol) {
+	        if (strpos($name, $symbol) !== false) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}	    
+	    
