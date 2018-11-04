@@ -1,6 +1,6 @@
 <?php
 	
-    require FM_PATH. 'vendor/Twig/Autoloader.php';
+    require FM_PATH . 'vendor/Twig/Autoloader.php';
     
 	function render($tmpl, $contentData, $header = null, $breadcrumbs = null)
 	{

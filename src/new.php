@@ -337,8 +337,10 @@ try {
 }
 
 
-PHP PDO: Работа с базой данных
-#  Соединение с базой данных
+############################ PHP PDO: Работа с базой данных ####################
+
+
+>>>>>  Соединение с базой данных  <<<<<<< 
 
 namespace Theory
 
@@ -357,8 +359,6 @@ $data = $pdo->query("select * from users")->fetchAll();
 print_r($data);
 
 
-
-
 /**
 Реализуйте интерфейс App\DDLManagerInterface в классе App\DDLManager
 
@@ -373,13 +373,14 @@ $ddl->createTable('users', [
     'name' => 'string'
 ]);
 
-// Получившийся запрос в базу:
+/*
+Получившийся запрос в базу:
 
 CREATE TABLE users (
     id integer,
     name string
 );
-
+*/
 
 
 namespace App;
@@ -420,7 +421,10 @@ class DDLManager implements DDLManagerInterface
     }
 }
 
-#  Безопасность при работе с внешними данными
+
+
+
+>>>>>  Безопасность при работе с внешними данными  <<<<<<<
 
 // WRONG!!!
 
@@ -428,16 +432,93 @@ $id = 7;
 $name = 'ada';
 $pdo->exec("insert into users values ($id, '$name')");
 
+
 // SQL INJECTION:
-/* $name = 'ada'); DELETE FROM users; --"; */
-/* $sql = "insert into users values ($id, '$name')"; */
-/* print_r($sql); */
-/* $pdo->exec($sql); */
+$id = 8;
+$name = "ada'); DELETE FROM users; --";  //  '); - закрываем запрос; -- комментируем оставшуюся часть запроса'); в конце
+$sql = "insert into users values ($id, '$name')";
+print_r($sql);
+$pdo->exec($sql);
 
 
-/* $values = [3, 'm\'ark --']; */
-/* $data = implode(', ', array_map(function ($item) use ($pdo) { */
-/*	return $pdo->quote($item); */
-/* }, $values); */
+$values = [3, 'm\'ark --']; 
+$data = implode(', ', array_map(function ($item) use ($pdo) { 
+    return $pdo->quote($item);  // заключает строку в кавычки (если требуется) и экранирует специальные символы внутри строки подходящим для драйвера способом.
+}, $values));
+$sql = "insert into users values ($id, '$name')";
+print_r($sql);
 
 $data = $pdo->query("select * from users")->fetchAll();
+print_r($data);
+
+
+/**
+Query класс который предоставляет абстракцию поверх sql. Его главное достоинство это возможность строить динамические запросы без склеивания строк. Реализуйте метод toSql.
+
+Пример использования:
+**/
+$query = new Query($pdo, 'users');
+$query = $query->where('from', 'github');
+$query = $query->where('id', '3')->where('age', 21);
+
+// SELECT * FROM users WHERE from = 'github' AND id = 3 AND age = 21;
+$query->toSql();
+
+$query->all();
+
+
+namespace App;
+
+class Query
+{
+    private $pdo;
+    private $where = [];
+
+    public function __construct($pdo, $table, $where = [])
+    {
+        $this->pdo = $pdo;
+        $this->table = $table;
+        $this->where = $where;
+    }
+
+    public function where($key, $value)
+    {
+        $where = [$key => $value];
+        return $this->getClone($where);
+    }
+
+    public function all()
+    {
+        return $this->pdo->query($this->toSql())->fetchAll();
+    }
+
+    public function toSql()
+    {
+        $sqlParts = [];
+        $sqlParts[] = "SELECT * FROM {$this->table}";
+        
+        if ($this->where) {
+            $where = implode(' AND ', array_map(function ($key, $value) {
+                $quotedValue = $this->pdo->quote($value);
+                return "$key = $quotedValue";
+            }, array_keys($this->where), $this->where));
+            $sqlParts[] = "WHERE $where";
+        }
+
+        return implode(' ', $sqlParts);        
+    }
+
+    private function getClone($where)
+    {
+        $mergedData = array_merge($this->where, $where);
+        return new self($this->pdo, $this->table, $mergedData);
+    }
+}
+
+
+
+>>>>>  Результат запроса в базу данных  <<<<<<<
+
+
+
+ 

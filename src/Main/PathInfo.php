@@ -73,3 +73,24 @@
 		}
 		return is_dir($currPath) ? 'folder.twig' : 'file.twig';
 	}
+
+
+	function getTreePaths($dir = ROOT)
+	{
+		$treePath = [];
+
+	    if ($dirHandle = opendir($dir)) {
+	        while($fName = readdir($dirHandle)) {
+	        	$pathFile = $dir . SEP . $fName;
+	            if ($fName == '.' || $fName== '..') { 
+	            	continue; 
+	            }
+	            if (is_dir($pathFile)) {
+	                $treePath[$fName] = ['path' => $pathFile];
+	                $treePath[$fName] = ['childDirs' => getTreePaths($pathFile)];
+	            }
+	        }
+	        closedir($dirHandle);
+	    }
+	    return $treePath;
+	}
