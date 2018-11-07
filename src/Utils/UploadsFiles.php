@@ -14,7 +14,7 @@
 	$data = [
 			  'msg' => '',
 			  'result' => 'error'
-			];
+	];
 
 	if (!empty($_FILES)) {
     	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);

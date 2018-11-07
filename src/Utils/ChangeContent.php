@@ -6,7 +6,7 @@
 	$data = [
 	           'msg' => '',
 	           'result' => 'error'
-	        ];
+    ];
 	        
 	$code = $_POST['code'];
 	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);

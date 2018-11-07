@@ -8,7 +8,7 @@
 	$data = [
 	           'msg' => '',
 	           'result' => 'error'
-	        ];
+    ];
 	        
 	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 		$data['msg'] .= "Incorrect method of sending data.<br>";
