@@ -1,15 +1,15 @@
 <?php
 
 	require_once "../config/Conf.php";
-	require_once "../Main/PathInfo.php";
 
 	$data = [
-	           'msg' => '',
-	           'result' => 'error'
+		'msg' => '',
+		'result' => 'error'
     ];
 	        
 	$code = $_POST['code'];
-	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);
+	$path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+	$relativePath = preg_replace('/\/src\//', '', $path, 1);
 	$pathFile = ROOT . $relativePath;
 
 	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -23,7 +23,7 @@
         		try {
         			fwrite($handle, $code);
         		} finally {
-        			fclose($handler);
+        			fclose($handle);
         			$data['result'] =  'success';
         		}
         	}

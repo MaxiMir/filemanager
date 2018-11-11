@@ -1,6 +1,7 @@
 {
-    "name": "mmirrev/test",
-    "description": "test",
+    "name": "maximir/filemanager",
+    "description": "first project",
+    "type": "project",
     "authors": [
         {
             "name": "MaxiM",
@@ -8,11 +9,13 @@
         }
     ],
     "require": {
-        "twig/twig": " 1.*"
+        "twig/twig": " 1.*",
+        "slim/slim": "3.*"
+        
     },
     "autoload": {
         "psr-4": {
-            "src\\": "Filemanager"
+            "src\\": "FM"
         },
         "files": [
             "config/Conf.php"

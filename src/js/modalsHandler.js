@@ -1,17 +1,27 @@
-$(function () {
-	var $msg = $('.main-message'),
-	    $tbody = $('#table_files tbody');
+	// var $blockAnim = $('<div>', {
+	// 	class: 'bouncing-loader',
+	// 	append: $('<div>')
+	// 				.add($('<div>'))
+	// 				.add($('<div>'))
+	// 			index.php	.add($('<div>'))
+	// });	
 
+$(function () {
+	var 
+		$msg = $('.main-message'),
+		$tbody = $('#table_files tbody'),
+		$relUrl = $('main').attr('data-relurl');
+	
 	$('[data-toggle="tooltip"]').tooltip();
 
-    /**
-     * handler: create files 
-     */     
+	/**
+	 * handler: create files 
+	 */
 	$('.create_files input[type=text]').on('blur', function () {
 		var
 			$inputVal = $(this).val(),
 			$errorField = $(this).next();
-		
+
 		if ($inputVal) {
 			if (isValidName($inputVal)) {
 				$errorField.text('');
@@ -31,7 +41,7 @@ $(function () {
 			$inputVal = $input.val(),
 			$btnSubmit = $currForm.find("button[type='submit']"),
 			$btnClose = $currForm.find("button[data-dismiss='modal']"),
-			$type = $input.attr('data-type');
+			$type = $input.attr('data-type'),
 			$isValidForm = false;
 
 		$errorField.empty();
@@ -45,7 +55,7 @@ $(function () {
 
 		if ($isValidForm) {
 			$.post({
-				url: 'Utils/CreateFiles.php',
+				url: $relUrl + 'Utils/CreateFiles.php',
 				dataType: 'json',
 				data: {
 					'name': $inputVal,
@@ -59,11 +69,11 @@ $(function () {
 						$errorField.html(data['msg']);
 					} else {
 						$btnClose.trigger('click');
-                        $.when($tbody
-                            .html(data['content']))
-                            .done(function() {
-                                showThenHideMsg('The file "' + $inputVal + '" was created successfully');
-                            }); 						
+						$.when($tbody
+								.html(data['content']))
+							.done(function () {
+								showThenHideMsg('The file "' + $inputVal + '" was created successfully');
+							});
 					}
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
@@ -75,10 +85,10 @@ $(function () {
 			});
 		}
 	});
-	
-    /**
-     * handler: uploads files 
-     */ 
+
+	/**
+	 * handler: uploads files 
+	 */
 	$('#formUploadsFiles').on('submit', function (e) {
 		var
 			$form = $(this),
@@ -110,7 +120,7 @@ $(function () {
 		} else {
 			$errorField.empty();
 			$.post({
-				url: 'Utils/UploadsFiles.php',
+				url: $relUrl + 'Utils/UploadsFiles.php',
 				xhr: function () {
 					var $myXhr = $.ajaxSettings.xhr();
 					if ($myXhr.upload) {
@@ -133,11 +143,11 @@ $(function () {
 						$errorField.html(data['msg']);
 					} else {
 						$btnClose.trigger('click');
-                        $.when($tbody
-                            .html(data['content']))
-                            .done(function() {
-                                showThenHideMsg('Files successfully uploaded');
-                            }); 						
+						$.when($tbody
+								.html(data['content']))
+							.done(function () {
+								showThenHideMsg('Files successfully uploaded');
+							});
 					}
 				},
 				error: errorHandler = function () {
@@ -155,61 +165,81 @@ $(function () {
 			});
 		}
 	});
-	
-    /**
-     * handler: rename files 
-     */ 
+
+	/**
+	 * handler: rename files 
+	 */
 	$('#table_files').on('click', '[data-action="rename"]', function (e) {
 		e.preventDefault();
 
-		var 
-		    $filePath = $(this).attr('data-url'),
+		var
+			$filePath = $(this).attr('data-path'),
 			$fileName = $(this).attr('data-name'),
 			$linkFile = $('.link_files[data-name="' + $fileName + '"]'),
-			$renameHtml = $('<div class="input-group"></div>')
-			    .append('<input type="text" class="form-control" placeholder="Enter name" value="" autofocus data-name="' + $fileName + '">')
-			    .append($('<div class="input-group-append"></div>')
-				.append('<button type="submit" class="btn btn-outline-secondary btn-ok" type="button">ok</button>')
-				.append('<button class="btn btn-outline-secondary btn-cancel" type="button">cancel</button>'));
+
+			$renameForm = $('<div>', {
+				class: 'input-group',
+				append: $('<input>', {
+						class: 'form-control',
+						type: 'text',
+						placeholder: 'Enter name',
+						value: '',
+						autofocus: 'autofocus',
+						'data-name': $fileName
+					})
+					.add($('<div>', {
+						class: 'input-group-append',
+						append: $('<button>', {
+								type: 'submit',
+								class: 'btn btn-outline-secondary btn-ok',
+								text: 'OK'
+							})
+							.add($('<button>', {
+								type: 'button',
+								class: 'btn btn-outline-secondary btn-cancel',
+								text: 'CANCEL'
+							}))
+					}))
+			});
 
 		$(this).addClass('disabled');
 
 		$linkFile.fadeOut('fast')
-    		.parent()
-    		.append($renameHtml)
-    		.find('input')
-    		.focus()
-    		.val('')
-    		.val($fileName);
+			.parent()
+			.append($renameForm)
+			.find('input')
+			.focus()
+			.val('')
+			.val($fileName);
 	});
-	
+
 	$('#table_files').on('click', '.btn-ok, .btn-cancel', function () {
-		var 
-		    $renameHtml = $(this).closest('.input-group'),
-			$input = $renameHtml.find('input[type="text"]'),
+		var
+			$renameForm = $(this).closest('.input-group'),
+			$input = $renameForm.find('input[type="text"]'),
 			$oldName = $input.attr('data-name'),
 			$newName = $input.val(),
-			$linkFile = $renameHtml.prev('.link_files'),
+			$linkFile = $renameForm.prev('.link_files'),
 			$type = $linkFile.attr('data-type'),
 			$iconRename = $('[data-type="rename"], [data-name="' + $oldName + '"]'),
 			$btnClose = $(this).next('.btn-cancel');
-			
+
 		if ($(this).hasClass('btn-cancel')) {
-			$renameHtml.remove();
-		    $linkFile.fadeIn('fast');
-		    $iconRename.removeClass('disabled');
+			$renameForm.remove();
+			$linkFile.fadeIn('fast');
+			$iconRename.removeClass('disabled');
 		} else {
-            if ($newName === $oldName) {
-			    $btnClose.trigger('click');
+			if ($newName === $oldName) {
+				$btnClose.trigger('click');
 			} else if ($.trim($newName) === '') {
-			    showThenHideMsg('Filename is empty', true);
-			    $btnClose.trigger('click');
+				showThenHideMsg('Filename is empty', true);
+				$btnClose.trigger('click');
 			} else if (!isValidName($newName)) {
 				showThenHideMsg('It is recommended not to use these symbols: "! @ # $ & ~ % * ( ) [ ] { } \' \" \\ / : ; > < ` " and space in the file name', true);
 				$btnClose.trigger('click');
 			} else {
 				$.post({
-					url: 'Utils/RenameFile.php',
+					url: $relUrl + 'Utils/RenameFile.php',
 					dataType: 'json',
 					data: {
 						'oldName': $oldName,
@@ -218,53 +248,64 @@ $(function () {
 					},
 					success: function (data) {
 						if (data['result'] == 'error') {
-						    showThenHideMsg(data['msg'], true);
+							showThenHideMsg(data['msg'], true);
 						} else {
-						    $.when($tbody
-						        .html(data['content']))
-					            .done(function() {
-					                showThenHideMsg('File successfully renamed');
-					            });
+							$.when($tbody
+									.html(data['content']))
+								.done(function () {
+									showThenHideMsg('File successfully renamed');
+								});
 						}
 					},
 					error: errorHandler = function () {
 						showThenHideMsg('Error renaming file', true);
 					}
 				});
-			}		    
+			}
 		}
 	});
-	
-    /**
-     * handler: delete files 
-     */ 	
-    $('#table_files').on('click', '[data-action="delete"]', function (e) {
-		e.preventDefault(); 
-        var $pathFile = $(this).attr('data-url');
-        
-        $.post({
-            url: 'Utils/DeleteFiles.php',
+
+	/**
+	 * handler: copy files 
+	 */
+	/*
+    generateModalWindow('dsfsdffsf', 'notice');
+    $('#modalQuestion').modal();
+	*/
+
+	/**
+	 * handler: delete files 
+	 */
+	$('#table_files').on('click', '[data-action="delete"]', function (e) {
+		var 
+			$pathFile = $(this).attr('data-path');
+
+		$.post({
+			url: $relUrl + 'Utils/DeleteFiles.php',
 			dataType: 'json',
-			data: { 'pathFile': $pathFile },
+			data: {
+				'pathFile': $pathFile
+			},
 			beforeSend: function () {
-			    $(this).addClass('disabled');    
+				$(this).addClass('disabled');
 			},
 			success: function (data) {
 				if (data['result'] == 'error') {
-				    showThenHideMsg(data['msg'], true);
+					showThenHideMsg(data['msg'], true);
 				} else {
-				    $.when($tbody
-				        .html(data['content']))
-			            .done(function() {
-			                showThenHideMsg('File successfully deleted');
-			            });                        
+					$.when($tbody
+							.html(data['content']))
+							.done(function () {
+								$.fx.off = true; 
+								showThenHideMsg('File successfully deleted');
+							});
 				}
 			},
 			error: errorHandler = function () {
-				showThenHideMsg('Error renaming file', true);
-			}            
-        });
-    });	
+				showThenHideMsg('Error deleting file', true);
+			}
+		});
+	});
 });
 
 
@@ -282,15 +323,73 @@ function changeProgressBar(e) {
 	}
 }
 
-function showThenHideMsg(msg, error = null)
-{
-    $('.main-message').attr('class', function() {
-        return error ? 'main-message text-danger' : 'main-message text-success'; 
-    });
-    
-    $('.main-message')
-        .html(msg)
-        .show()
-        .delay(1500)
-        .hide(500);
+function showThenHideMsg(msg, error = null) {
+	$('.main-message').attr('class', function () {
+		return error ? 'main-message text-danger' : 'main-message text-success';
+	});
+
+	$('.main-message')
+		.html(msg)
+		.show()
+		.delay(1500)
+		.hide(500);
+}
+
+function generateModalWindow(msg, header) {
+	$modalQuestion = $('<div>', {
+		class: 'modal fade',
+		id: 'modalQuestion',
+		tabindex: '-1',
+		role: 'dialog',
+		'aria-labelledby': 'modalQuestionTitle',
+		'aria-hidden': 'true',
+		append: $('<div>', {
+			class: 'modal-dialog modal-dialog-centered',
+			role: 'document',
+			append: $('<div>', {
+				class: 'modal-content'
+			})
+		})
+	}).appendTo('footer');;
+
+	$modalQuestionHeader = $('<div>', {
+		class: 'modal-header bg-warning',
+		append: $('<h5>', {
+				class: 'modal-title',
+				text: header
+			})
+			.add($('<button>', {
+				class: 'close',
+				type: 'button',
+				'data-dismiss': 'modal',
+				'aria-label': 'Close',
+				append: $('<span>', {
+					'aria-hidden': 'true',
+					html: '&times;'
+				})
+			}))
+	}).appendTo('#modalQuestion .modal-content');
+
+	$modalQuestionBody = $('<div>', {
+		class: 'modal-body',
+		append: $('<p>', {
+			class: 'question-text',
+			text: msg
+		})
+	}).appendTo('#modalQuestion .modal-content');
+
+	$modalQuestionFooter = $('<div>', {
+		class: 'modal-footer',
+		append: $('<button>', {
+				type: 'button',
+				class: 'btn btn-secondary',
+				'data-dismiss': 'modal',
+				text: 'CANCEL'
+			})
+			.add($('<button>', {
+				type: 'button',
+				class: 'btn btn-primary',
+				text: 'OK'
+			}))
+	}).appendTo('#modalQuestion .modal-content');
 }

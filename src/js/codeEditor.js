@@ -1,9 +1,11 @@
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip();
 
-	var editor = ace.edit('editor'),
+	var 
+		editor = ace.edit('editor'),
 		mode = setEditorMode(),
-	    source = editor.getValue();
+	    source = editor.getValue(),
+	    relUrl = $('main').attr('data-relurl');
     
 	editor.session.setMode('ace/mode/' + mode)
 	editor.setOptions({
@@ -34,7 +36,7 @@ $(function () {
 			$msg = $('.main-message');
 
 		$.post({
-			url: 'Utils/ChangeContent.php',
+			url: relUrl + 'Utils/ChangeContent.php',
 			data: {
 				'code': code
 			},

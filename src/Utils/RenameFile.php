@@ -1,13 +1,17 @@
 <?php
 
-	require_once "../config/Conf.php";
-	require_once "../Main/PathInfo.php";
-	require_once "../Main/FilesInfo.php";
-	require_once "../Main/Render.php";
+    use \FM\Render; 
+    use \FM\FileData\FileFunc;
+    use \FM\FileData\PathInfo; 
+        
+    require_once "../config/Conf.php";
+    require_once '../FileData/FileFunc.php';
+    require_once '../FileData/PathInfo.php';    
+	require_once '../Render.php';
 
 	$data = [
-			  'msg' => '',
-			  'result' => 'error'
+		'msg' => '',
+		'result' => 'error'
 	];
 
 	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -16,22 +20,24 @@
     	$oldName = $_POST['oldName'];
     	$newName = $_POST['newName'];
     	$type = $_POST['type'];
-    	$relativePath = getRelPath($_SERVER['HTTP_REFERER']);
-    	$parentDir = ROOT . $relativePath;	    
+		$path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+		$relativePath = preg_replace('/\/src\//', '', $path, 1);
+		$parentDir = ROOT . $relativePath;    
     	$pathOldFile = $parentDir . $oldName;
     	$pathNewFile = $parentDir . $newName;
-    	
+		$isValidName = FileFunc::isValidName($newName);
+
 		if ($newName == '') {
 			$data['msg'] .= "File name is empty <br>";
 		} elseif ($oldName == $newName) {
 		    $data['msg'] .= "File names are not individual <br>";
 		} elseif (strlen($newName) > 255) {
 			$data['msg'] .= "File name is too long <br>";
-		} elseif (!isValidName($newName)) {
+		} elseif (!$isValidName) {
 			$data['msg'] .= "It is recommended not to use these symbols: '! @ # $ & ~ % * ( ) [ ] { } ' \" \\ / : ; > < `' and space in the file name <br>";
 		}
 
-		if ($relativePath == '' || !is_dir($parentDir)) {
+		if (!is_dir($parentDir)) {
 			$data['msg'] .= "Path is incorrect: '{$parentDir}' <br>";
 		}
 
@@ -44,9 +50,9 @@
 		        $data['msg'] = 'Failed to rename file';
 		    } else {
 		        $data['result'] = 'success';
-	        	$filesPaths = glob($parentDir . '{,.}*', GLOB_BRACE);
-				$contentData = getFilesInfo($filesPaths);
-				$data['content'] = render('table_files.twig', $contentData);				
+	        	$path = new PathInfo($parentDir);
+	        	$contentData = $path->getContentData();
+				$data['content'] = Render::generate('table_files.twig', ['contentData' => $contentData]); 				
 		    }
 		}	
 	}

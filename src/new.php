@@ -1,524 +1,170 @@
 <?
+
+###################### SLIM ###################### 
+
+// file: composer.json
+
 {
-	"autoload": {
-		"psr-4": {
-			"src\\": "Filemanager";  
-		}
+	"require": {
+		"slim/slim": "2.*"
 	}
 }
 
-# https://phpprofi.ru/blogs/post/52
+$composer init // install
+$ php copmposer.phar install
 
-composer self-update // обновление composer
-composer dump-autoload --optimize // обновить загрузчик, т. к. появились новые классы без установки или обновления пакетов . Ключ --optimize преобразует PSR-0 в автозагрузку как для classmap, чтобы автозагрузчик был наиболее быстрым. Это настоятельно рекомендуется для production (вы можете получить 20% прирост).
+$app = new\Slim\Slim();
+$app->get('/hello/:name', function($name) {
+	echo 'Hello, $name';
+});
 
-// запись сеттеров в 1 строку:
+$app->run();
 
-Class User 
-{
-	private $name;
-	private $age;
 
-	public function __construct(string $name, string $age) 
-	{
-		$this->name = $name;
-		$this->age = $age;
-	}
+// file: index.php
 
-	public function setName(string $name): User
-	{
-		$this->name = $name;
-		return $this;
-	}
+require_once "vendor/autoload.php";
 
-	public function setAge(string $age): User
-	{
-		$this->age = $age;
-		return $this;
-	}	
+\Slim\Slim::registerAutoloader();
+
+$app = new \Slim\Slim([
+						'mode' => 'development', // по умолч. Определяется в момент создания класса
+						'debug' => TRUE // режим откладки, по умолчанию включен и исп. свой класс ERROR Exception для перехвата и отображению ошибок
+						'templates.path' => 'templates', // путь до каталога с шаблонами
+						'cookies.encrypt' => TRUE, // влючение режима шифрования значений, которые записываются в куки
+						'cookies.lifetime'=>  '20 minutes', // время жизни кук
+						'cookies.path' => '/', // устанавливает подмножество страниц, для которых действительны значения файлов cookies
+						'cookies.domain' => 'slim.ru', // -//- для каких доменов
+						'cookies.secure' => FALSE, // Если true, то информация по кукам пересылается только по https с использованием SSL сертификата. По-умолч. false.
+						'cookies.httponly' => TRUE, // куки будут доступны для различных клиентских языков веб програмирования (напр., JS)
+						'cookies.cipher' => 'cipher',
+						'cookies.cipher_mode' => 'mode',
+						'cookies.secret_key' => 'key',
+						'host' => 'localhost',
+						'user' => 'user',
+						'pass' => 'pass',
+						'db' => 'dbname'
+]); // в массиве при необходимости передаем наши настройки. 1 ваирант
+
+$app->config('db'); // возвращает значение настройки
+$app->config('db' => 'dbname'); // изменяет значение настройки
+$app->config([ // изменение/создание настроек. 2 вариант
+ 			  'host' => 'localhost',
+ 			  'user' => 'user',
+			  'pass' => 'pass',
+			  'db' => 'dbname'
+]); 
+
+$app->configureMode('development', function() use ($app) {  // привязываем конкретные настройки mode
+	$app->config([
+					'debug' => TRUE
+	]);				
+});
+
+$app->configureMode('test', function() use ($app) {  // привязываем конкретные настройки mode. Вызывается после установки/изменения режима mode
+	$app->config([
+					'debug' => FALSE
+	]);	
+});
+
+
+getDefaultSettings(); // возвращает массив настроек по-умолчанию
+
+$app->get('hello', function() { // index.php?hello или index.php/hello
+	$app = \Slim\Slim::getInstance(); // возвращает ранее созданный объект данного класса или можно использовать use($app)
+	echo 'world';
+});
+
+$app->post('/add', function () {} {
+	print_r($_POST);
+});
+
+$app->map('/create', function() {
+	echo 'STRING!';
+})->via('GET', 'POST')->name('create');  // POST & GET. name - задаем имя роутера
+
+$app->get('article/:name+', function ($name = 1) use ($app)) { // если параметр необязательный, необходимо обернуть в () - (:name). Значение по умолчанию
+	print_r($name); // + создает массив из параметров
 }
 
-$user = new User('Max', '21');
-$user->setName('Jorn')->setAge('25');
+// несколько необязательных параметров: (/:id(/:name))
 
-interface PersonInterface // указываем только публичные методы
-{
-	public function get(): string;
-	public function set(string $name);
+$app->run(); // запускаем фреймворк
+
+// file: .htaccess
+
+RewriteEngine On // подключаем модуль перенаправления сервера Apache
+RewriteCond %{REQUEST_FILENAME} !-f // условие перенаправления (если не файл)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L] // правило перенаправления: домен + index.php + добавленный запроc. Флаг QSA - добавление запроса, L - последнее перенаправление
+
+
+// маршрутизация - процесс получения части URI и разложение его на параметры для определения того, какой контроллер и какое его действие должны выполниться.
+// роутер - метод, в котором определен шаблон части URI и функция обработчик, код которой будет выполнен при совпадении текущего URI c описанным шаблоном.
+
+URI - Uniform Resource Identifier - единообразный индентификатор ресурса = http://slim.ru/article/id/2-title.php
+URL - Uniform Resource Locator - единообразный указатель ресурса = http://slim.ru
+URN - Iniform Resource Name - единообразный указатель имени = /article/id/2-title.php
+
+
+
+######################## .htaccess ########################
+
+# .htaccess - файл дополнительной конфигурации web сервера
+
+# - комментарий
+AddDefaultCharset utf-8
+
+# - запрет листинга каталогов
+Options -Indexes // разрешить вместо "-" - "+"" 
+
+# открытие файлов без указания расширения (category.php -> category)
+Options +MultiViews 
+
+# Переопределение индексного файла
+DirectoryIndex file_php.php
+
+# Видоизменяет листинг каталога
+IndexOptions FancyIndexing
+IndexOptions FancyIndexing ScanHTMLTitles // добавляет колонку title файлам html
+
+# Исключение из листинга определенных файлов
+IndexIgnore *.rar *.zip *.txt // если поставить * - все файлы
+
+# Выполнение кода PHP в не .php файлах
+// файл httpd.conf:
+AddType application/x-httpd-php .php .php5 .phtml // файлы которые обрабатываются интерпритатором php, перед отдачей клиенту
+
+AddType application/x-httpd-php .htm .css
+
+// file: style.css:
+
+<?php header("Content-Type: text/css"); ?>
+<?php $bg ="#333"; $color = '#fff'; ?>
+
+body {
+	background: <?=$bg?>
+	color: <?=$color?>
 }
 
-interface CityInterface
-{
-	public function addPerson(Person $person);
-	public function getPerson(): array;
-}
+# Страницы ошибок
 
-class Person implements PersonInterface
-{
-	private $name;
+ErrorDocument 403 /errors/page403.html
+ErrotDocument 404 /errors/page404.html
 
-	public function get(): string
-	{
-		return $this->name;
-	}
+# Порядок работы директив Allow и Deny
+Order Deny,Allow // Deny, Allow - запрет доступа всем, кроме ...
+Order Allow, Deny // Allow, Deny - разрешаем всем кроме ...
 
-	public function set(string $value)
-	{
-		$this->name = $value;
-	}
-}
+Deny from all // запрет всем => 403 ошибка
+Allow from 127.0.0.1, 127.0.0.2 // разрешена только с этих IP. Можно указывать часть IP адреса или их диапазон
+// Стоит учесть тот факт, что содержимое файла будет все-равно доступно другим скриптам.
 
-class City implements CityInterface
-{
-	private $persons = [];
+# Ограничение доступа к файлам
+<Files "rar.rar"> // к конкретному файлу
+    Deny from all 
+    Allow from 127.0.0.1
+</Files>    
 
-	public function addPerson(Person $person)
-	{
-		$this->persons[] = $person->get(); 
-	}
 
-	public function getPerson(): array
-	{
-		return $this->persons;
-	}
-}
-
-$person = new Person();
-$person->set('Misha');
-
-$person2 = new Person();
-$person2->set('Vanya');
-
-$city = new City();
-$city->addPerson($person);
-$city->addPerson($person2);
-$city->getPerson(); // => [0]=> 'Misha', [1]=>'Vanya'
-
-
-abstract class BaseModel 
-{
-		public function selectAll(): string
-		{
-			return 'SELECT * FROM ' . $this->getTableName();
-		}
-
-		public function db(string $sql)
-		{
-			// TODO: db реализацию сделать!
-		}
-
-		abstract public function getTableName():string // у потомков реализация данного метода отличается
-}
-
-class Article extends BaseModel
-{
-	public function getTableName(): string
-	{
-		return 'task';
-	}
-}
-
-$task = new Atricle();
-echo $task->selectAll();
-
-// трейд - механизм, реализующий повторное использование кода. Решает проблему отсутствия множественного наследования.
-
-class Article
-{
-	public $sql;
-	public function executeSql() // реализация методов идентична
-	{
-		return $this->sql;
-	}	
-}
-
-class User
-{
-	public $sql;
-	public function executeSql() // реализация методов идентична
-	{
-		return $this->sql;	
-	}
-}
-
-// Реализация метода executeSql в классах индентична, а значит можно использовать трейт:
-
-trait BaseModel
-{
-	public $sql;
-	public function executeSql() // реализация методов идентична
-	{
-		return $this->sql;	
-	}
-
-	public function selectAllFromDB()
-	{
-		$this->sql = 'SELECT * FROM' . $this->getTableName();
-	}	
-
-	abstruct public function getTableName(): string;
-}
-
-class Article
-{
-	use BaseModel; // можно перечислить несколько трейтов через ','
-	public function getTableName()
-	{
-		return 'articles';
-	}
-}
-
-class User 
-{
-	use BaseModel;
-	public function getTableName()
-	{
-		return 'users';
-	}
-	
-}
-
-$article = new Article();
-$article->selectAllFromDB();
-echo $article->executeSql(); // => SELECT * FROM articles
-
-$user = new User();
-$user->selectAllFromDB();
-echo $user->executeSql(); // => SELECT * FROM users
-
-
-require 'vendor/autoload.php';
-
-class User
-{
-	public $sql;
-
-	public function addUser(string $login, string $password)
-	{
-		if(strlen($login) < 3 || strlen($login) > 15) {
-			return false;
-		}
-
-		if(strlen($password) < 3 || strlen($password) > 6) {
-			return false;
-		}
-
-		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
-
-		return true;
-	}
-}
-
-$user = new User();
-$result = $user->addUser('Misha', '1234');
-if ($result === true) {
-	echo 'user was added';
-} else {
-	echo 'fail';
-}
-
-// Тоже самое использую Exceptions:
-
-class User
-{
-	public $sql;
-
-	public function addUser(string $login, string $password)
-	{
-		if(strlen($login) < 3 || strlen($login) > 15) {
-			throw new Exception('Wrong login');
-		}
-		
-		if(strlen($password) < 3 || strlen($password) > 6) {
-			hrow new Exception('Wrong password');
-		}
-
-		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
-		
-		return true;
-	}
-}
-
-try {
-	$user = new User();
-	$result = $user->addUser('Misha', '1234');
-	echo 'user was added';	
-} catch(Exception $e) {
-	die('Fail');
-}
-
-
-// Чтобы каждый раз не писать конструкцию try/catch лучше создать отдельный класс:
-
-class UserLoginException extends Exception
-{
-	
-}
-
-class UserPasswordException extends Exception
-{
-	
-}
-
-class User
-{
-	public $sql;
-
-	public function addUser(string $login, string $password)
-	{
-		if(strlen($login) < 3 || strlen($login) > 15) {
-			throw new UserLoginException;
-		}
-
-		if(strlen($password) < 3 || strlen($password) > 6) {
-			throw new UserPasswordException;
-		}
-
-		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
-		
-		return true;
-	}
-}
-
-try {
-	$user = new User();
-	$result = $user->addUser('Misha', '1234');
-	echo 'user was added';	
-} catch(UserLoginException $e) {
-	die('Wrong login');
-} catch(UserPasswordException $e) {
-	die('Wrong password');
-}
-
-
-// В этом варианте получается много catch, поэтому:
-
-class UserException extends Exception
-{
-    
-}
-
-class UserLoginException extends UserException
-{
-	$protected $message = 'wrong login';
-}
-
-class UserPasswordException extends UserException
-{
-	$protected $message = 'wrong password';	
-}
-
-class User
-{
-	public $sql;
-
-	public function addUser(string $login, string $password)
-	{
-		if(strlen($login) < 3 || strlen($login) > 15) {
-			throw new UserLoginException;
-		}
-
-		if(strlen($password) < 3 || strlen($password) > 6) {
-			throw new UserPasswordException;
-		}
-
-		$this->sql = "INSERT INTO users VALUES('', {$login}, {$pasword})";
-		
-		return true;
-	}
-}
-
-try {
-	$user = new User();
-	$result = $user->addUser('Misha', '1234');
-	echo 'user was added';	
-} catch(UserException $e) {
-	die($e->getMessage());
-}
-
-
-############################ PHP PDO: Работа с базой данных ####################
-
-
->>>>>  Соединение с базой данных  <<<<<<< 
-
-namespace Theory
-
-$opt = [
-	\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION	// режим ошибок - Exceptions	
-	   ];
-
-/* $dsn = "mysql:host=$host;dbname=$db;charset=$charset"; // Формат описывающий параметры для подключения */
-
-$pdo = new \PDO('sqlite::memory', null, null, $opt); // 2-й, 3-й параметр логин и пароль.
-
-$pdo->exec("create table users (id integer, name string)");	   
-$pdo->exec("insert into users values(3, 'adel')");	   
-$pdo->exec("insert into users (7, 'ada')");	   
-$data = $pdo->query("select * from users")->fetchAll();
-print_r($data);
-
-
-/**
-Реализуйте интерфейс App\DDLManagerInterface в классе App\DDLManager
-
-Пример использования:
-**/
-
-$dsn = 'sqlite::memory:';
-$ddl = new DDLManager($dsn);
-
-$ddl->createTable('users', [
-    'id' => 'integer',
-    'name' => 'string'
-]);
-
-/*
-Получившийся запрос в базу:
-
-CREATE TABLE users (
-    id integer,
-    name string
-);
-*/
-
-
-namespace App;
-
-interface DDLManagerInterface
-{
-    public function __construct($dsn, $user = null, $pass = null);
-
-    public function createTable($table, array $params);
-}
-
-
-namespace App;
-
-class DDLManager implements DDLManagerInterface
-{
-    private $pdo;
-
-    public function __construct($dsn, $user = null, $pass = null)
-    {
-        $options = [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION];
-        $this->pdo = new \PDO($dsn, $user, $pass, $options);
-    }
-
-    public function createTable($table, array $params)
-    {
-        $fieldParts = array_map(function ($key, $value) {
-            return "{$key} {$value}";
-        }, array_keys($params), $params);
-        $fieldsDescription = implode(", ", $fieldParts);
-        $sql = sprintf("CREATE TABLE %s (%s)", $table, $fieldsDescription);
-        return $this->pdo->exec($sql);
-    }  
-
-    public function getConnection()
-    {
-        return $this->pdo;
-    }
-}
-
-
-
-
->>>>>  Безопасность при работе с внешними данными  <<<<<<<
-
-// WRONG!!!
-
-$id = 7;
-$name = 'ada';
-$pdo->exec("insert into users values ($id, '$name')");
-
-
-// SQL INJECTION:
-$id = 8;
-$name = "ada'); DELETE FROM users; --";  //  '); - закрываем запрос; -- комментируем оставшуюся часть запроса'); в конце
-$sql = "insert into users values ($id, '$name')";
-print_r($sql);
-$pdo->exec($sql);
-
-
-$values = [3, 'm\'ark --']; 
-$data = implode(', ', array_map(function ($item) use ($pdo) { 
-    return $pdo->quote($item);  // заключает строку в кавычки (если требуется) и экранирует специальные символы внутри строки подходящим для драйвера способом.
-}, $values));
-$sql = "insert into users values ($id, '$name')";
-print_r($sql);
-
-$data = $pdo->query("select * from users")->fetchAll();
-print_r($data);
-
-
-/**
-Query класс который предоставляет абстракцию поверх sql. Его главное достоинство это возможность строить динамические запросы без склеивания строк. Реализуйте метод toSql.
-
-Пример использования:
-**/
-$query = new Query($pdo, 'users');
-$query = $query->where('from', 'github');
-$query = $query->where('id', '3')->where('age', 21);
-
-// SELECT * FROM users WHERE from = 'github' AND id = 3 AND age = 21;
-$query->toSql();
-
-$query->all();
-
-
-namespace App;
-
-class Query
-{
-    private $pdo;
-    private $where = [];
-
-    public function __construct($pdo, $table, $where = [])
-    {
-        $this->pdo = $pdo;
-        $this->table = $table;
-        $this->where = $where;
-    }
-
-    public function where($key, $value)
-    {
-        $where = [$key => $value];
-        return $this->getClone($where);
-    }
-
-    public function all()
-    {
-        return $this->pdo->query($this->toSql())->fetchAll();
-    }
-
-    public function toSql()
-    {
-        $sqlParts = [];
-        $sqlParts[] = "SELECT * FROM {$this->table}";
-        
-        if ($this->where) {
-            $where = implode(' AND ', array_map(function ($key, $value) {
-                $quotedValue = $this->pdo->quote($value);
-                return "$key = $quotedValue";
-            }, array_keys($this->where), $this->where));
-            $sqlParts[] = "WHERE $where";
-        }
-
-        return implode(' ', $sqlParts);        
-    }
-
-    private function getClone($where)
-    {
-        $mergedData = array_merge($this->where, $where);
-        return new self($this->pdo, $this->table, $mergedData);
-    }
-}
-
-
-
->>>>>  Результат запроса в базу данных  <<<<<<<
-
-
-
- 
+// ? - любой 1 символ, * - любые символы

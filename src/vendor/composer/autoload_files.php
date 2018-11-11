@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    '253c157292f75eb38082b5acb06f3f01' => $vendorDir . '/nikic/fast-route/src/functions.php',
     '320cde22f66dd4f5d3fd621d3e88b98f' => $vendorDir . '/symfony/polyfill-ctype/bootstrap.php',
-    '642bd66644472b60714fef87eb38f09e' => $baseDir . '/config/Conf.php',
+    '4693e611eae68cb073f28ca3823821f2' => $baseDir . '/config/Conf.php',
 );

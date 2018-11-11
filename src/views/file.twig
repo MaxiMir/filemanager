@@ -1,6 +1,6 @@
 {%include 'file_header.twig'%}
 
-    <main role="main">
+    <main role="main" data-relurl="{{ FM_REL_PATH }}">
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
@@ -8,7 +8,7 @@
                     <h2 class="text-success main-message"></h2>
                     <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/src/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/{{ FM_FOLDER_NAME }}/">Home</a></li>
                         {% autoescape false %}
                             {{ breadcrumbs }}
                         {% endautoescape %}    
