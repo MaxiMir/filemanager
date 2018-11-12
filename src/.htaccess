@@ -1,16 +1,16 @@
 php_value display_errors 1
 php_value display_startup_errors 1
-#php_value error_reporting E_ALL
-
-AddDefaultCharset UTF-8
-ErrorDocument 404 /src/views/404.php
-
-RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule . index.php [L]
-
+php_value error_reporting E_ALL
 php_value post_max_size 1000M
 php_value upload_max_filesize 500M
 php_value max_execution_time 3000
+
+AddDefaultCharset UTF-8
+
+RewriteEngine on
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule . index.php [L]
+RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
+
 

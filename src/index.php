@@ -4,7 +4,6 @@
 
     require_once __DIR__ . '/vendor/autoload.php';
 
-    
     use \FM\Render;
     use \FM\FileData\PathInfo;
     
@@ -14,11 +13,11 @@
     require_once 'FileData/FileFunc.php'; 
     require_once 'Render.php';
 
-    $app = new \Slim\App;
+    $app = new \Slim\App;  
 
-    $app->get('/[{url:.*}]', function ($request, $response, $args) {
-
-        $currPath = ROOT . $request->getAttribute('url');
+    $app->get('/[{url:.*}]', function ($request, $response, $args) { 
+        $queryParams = $request->getQueryParams(); // $currPath = ROOT . $request->getAttribute('url');
+        $currPath = empty($queryParams) ? ROOT : ROOT . $queryParams['url'];
         $path = new PathInfo($currPath);
 
         if (!$path->isvalidPath()) {
@@ -47,6 +46,7 @@
     
 
     /* TODO: 
+        * увеличение шрифтов в редакторе
     	* index.php и .htaccess в корне
     	* настроить namespace  
         * картинки без перехода на страницу + превью.

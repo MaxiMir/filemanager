@@ -38,7 +38,7 @@
 			$data['msg'] .= "File with name '{$name}' already exist <br>";
 		}
 		
-		if ($relativePath == '' || !is_dir($parentDir)) {
+		if (!is_dir($parentDir)) {
 			$data['msg'] .= "Path is incorrect <br> {$relativePath}  <br>";
 		}
 
