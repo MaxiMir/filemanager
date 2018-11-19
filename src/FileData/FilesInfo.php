@@ -32,7 +32,7 @@
                 $type = is_dir($path) ? 'folders' : 'files';
                 $fileСhangeDate = date("d.m.Y H:i:s", filemtime($path));
                 $classNewFile = time() - filemtime($path) < TIME_NEW_FILE ? 'new-file' : '';
-                $relUrl = str_replace(ROOT, '', $path);
+                $relUrl = FileFunc::getRelUrl($path);
                 $size = sprintf("%u", filesize($path));
                 
                 $this->dataSet[$type][$fileName]['path'] = $path;

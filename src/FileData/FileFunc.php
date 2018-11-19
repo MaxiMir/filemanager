@@ -4,6 +4,12 @@
 
     class FileFunc
     {
+        public function getRelUrl($path)
+        {
+            $relPath = str_replace(ROOT, '', $path);
+            return preg_match('/.htaccess|index.php/', $relPath) ? "?url={$relPath}" : $relPath;          
+        }
+
         public static function formatFileSize($numberOfBytes)
         {
             $amountОfInformation = [
