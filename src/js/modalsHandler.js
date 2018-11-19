@@ -202,7 +202,7 @@ $(function () {
 					}))
 			});
 
-		$(this).addClass('disabled');
+		$('[data-action="rename"]').addClass('disabled');
 
 		$linkFile.fadeOut('fast')
 			.parent()
@@ -221,13 +221,13 @@ $(function () {
 			$newName = $input.val(),
 			$linkFile = $renameForm.prev('.link_files'),
 			$type = $linkFile.attr('data-type'),
-			$iconRename = $('[data-type="rename"], [data-name="' + $oldName + '"]'),
+			$iconsRename = $('[data-action="rename"]'),
 			$btnClose = $(this).next('.btn-cancel');
 
 		if ($(this).hasClass('btn-cancel')) {
 			$renameForm.remove();
 			$linkFile.fadeIn('fast');
-			$iconRename.removeClass('disabled');
+			$iconsRename.removeClass('disabled');
 		} else {
 			if ($newName === $oldName) {
 				$btnClose.trigger('click');
