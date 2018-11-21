@@ -1,16 +1,13 @@
 <?php
 
-    namespace FM;
-
-    use \Psr\Http\Message\ServerRequestInterface as Request;
-    use \Psr\Http\Message\ResponseInterface as Response;
-    use \FM\Render;
-    use \FM\FileData\PathInfo;
-    
     require 'vendor/autoload.php';
     require 'FileData/PathInfo.php';
     require 'Render.php';
 
+    use \Psr\Http\Message\ServerRequestInterface as Request;
+    use \Psr\Http\Message\ResponseInterface as Response;
+    use FM\FileData\PathInfo;
+    use FM\Render;
 
     $configuration = [
         'settings' => [
@@ -18,9 +15,9 @@
         ],
     ];
 
-    $app = new \Slim\App($configuration);  
-    
-    $app->get('/[{url:.*}]', function (Request $request, Response $response, $args) { 
+    $app = new \Slim\App($configuration);
+
+    $app->get('/[{url:.*}]', function (Request $request, Response $response, $args) {
         $queryParam = $request->getQueryParam('url', ''); // $currPath = ROOT . $request->getAttribute('url');
         $currPath = ROOT . $queryParam;
         $path = new PathInfo($currPath);
@@ -33,7 +30,7 @@
         } else {
             $tmpl = $path->chooseTemplate();
             $header = $path->getHeader();
-            $breadcrumbs = $path->generateBreadcrumbs(); 
+            $breadcrumbs = $path->generateBreadcrumbs();
             $contentData = $path->getContentData();
             $data = [
 				'tmpl' => $tmpl,
@@ -48,14 +45,15 @@
     });
 
     $app->run();
-    
-    /* TODO: 
+
+    /* TODO:
+        * поднять вверх при скролле
         * увеличение шрифтов в редакторе
     	* index.php и .htaccess в корне
-    	* настроить namespace  
+    	* настроить namespace
         * картинки без перехода на страницу + превью.
         * верстка
-        
+
         -> https://github.com/slimphp/Twig-View
         -> http://slimframework.ru/objects/router
     */
