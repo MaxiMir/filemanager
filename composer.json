@@ -11,11 +11,10 @@
     "require": {
         "twig/twig": " 1.*",
         "slim/slim": "3.*"
-        
     },
     "autoload": {
         "psr-4": {
-            "src\\": "FM"
+            "FM\\": "src/"
         },
         "files": [
             "config/Conf.php"
