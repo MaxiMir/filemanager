@@ -7,7 +7,7 @@
         public function getRelUrl($path)
         {
             $relPath = str_replace(ROOT, '', $path);
-            return preg_match('/.htaccess|index.php/', $relPath) ? "?url={$relPath}" : $relPath;          
+            return preg_match('/.htaccess|index.php|style.css/', $relPath) ? "?url={$relPath}" : $relPath;          
         }
 
         public static function formatFileSize($numberOfBytes)
