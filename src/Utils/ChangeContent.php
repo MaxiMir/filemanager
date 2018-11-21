@@ -9,8 +9,10 @@
 	        
 	$code = $_POST['code'];
 	$path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-	$relativePath = preg_replace('/\/src\//', '', $path, 1);
-	$pathFile = ROOT . $relativePath;
+	$relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
+	$query = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY);
+	$urlQuery = ($query != '') ? str_replace('url=', '', $query) : '';
+	$pathFile = ROOT . $relativePath . $urlQuery;
 
 	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 		$data['msg'] = "Incorrect method of sending data <br>";

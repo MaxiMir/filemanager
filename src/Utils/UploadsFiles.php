@@ -13,7 +13,6 @@
 	ini_set('max_file_uploads', "500"); 
 	ini_set('max_execution_time', '3000'); // максимальное время в секундах, в течение которого скрипт должен полностью загрузиться
 	
-
 	$data = [
 		'msg' => '',
 		'result' => 'error'
@@ -22,7 +21,7 @@
 	if (!empty($_FILES)) {
 		$pathNewFiles = [];
 		$path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-		$relativePath = str_replace('src/', '', $path);
+		$relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
 		$parentDir = ROOT . $relativePath;
  
 		if (!is_dir($parentDir)) {

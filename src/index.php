@@ -2,22 +2,27 @@
 
     namespace FM;
 
-    require_once __DIR__ . '/vendor/autoload.php';
-
+    use \Psr\Http\Message\ServerRequestInterface as Request;
+    use \Psr\Http\Message\ResponseInterface as Response;
     use \FM\Render;
     use \FM\FileData\PathInfo;
     
-    require_once 'FileData/PathInfo.php';
-    require_once 'FileData/FilesInfo.php';
-    require_once 'FileData/FileInfo.php';   
-    require_once 'FileData/FileFunc.php'; 
-    require_once 'Render.php';
+    require 'vendor/autoload.php';
+    require 'FileData/PathInfo.php';
+    require 'Render.php';
 
-    $app = new \Slim\App;  
 
-    $app->get('/[{url:.*}]', function ($request, $response, $args) { 
-        $queryParams = $request->getQueryParams(); // $currPath = ROOT . $request->getAttribute('url');
-        $currPath = empty($queryParams) ? ROOT : ROOT . $queryParams['url'];
+    $configuration = [
+        'settings' => [
+            'displayErrorDetails' => true,
+        ],
+    ];
+
+    $app = new \Slim\App($configuration);  
+    
+    $app->get('/[{url:.*}]', function (Request $request, Response $response, $args) { 
+        $queryParam = $request->getQueryParam('url', ''); // $currPath = ROOT . $request->getAttribute('url');
+        $currPath = ROOT . $queryParam;
         $path = new PathInfo($currPath);
 
         if (!$path->isvalidPath()) {
@@ -44,15 +49,13 @@
 
     $app->run();
     
-
     /* TODO: 
         * увеличение шрифтов в редакторе
     	* index.php и .htaccess в корне
     	* настроить namespace  
         * картинки без перехода на страницу + превью.
         * верстка
-
-        //http://slimframework.ru/objects/router
+        
+        -> https://github.com/slimphp/Twig-View
+        -> http://slimframework.ru/objects/router
     */
-
-

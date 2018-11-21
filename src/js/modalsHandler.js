@@ -32,8 +32,6 @@ $(function () {
 	});
 
 	$('.create_files').on('submit', function (e) {
-		e.preventDefault();
-
 		var
 			$currForm = $("#" + $(this).attr('id')),
 			$errorField = $currForm.find(".error_msg"),
@@ -44,6 +42,7 @@ $(function () {
 			$type = $input.attr('data-type'),
 			$isValidForm = false;
 
+        e.preventDefault();
 		$errorField.empty();
 
 		if ($.trim($inputVal) === '') {
@@ -101,7 +100,7 @@ $(function () {
 			$files = $('#newFiles').get(0).files,
 			$error = '';
 
-		e.preventDefault();
+        e.preventDefault();
 
 		if ($files.length === 0) {
 			$error = 'Please, select files';
@@ -269,45 +268,56 @@ $(function () {
 	 * handler: copy files 
 	 */
 	/*
-    generateModalWindow('dsfsdffsf', 'notice');
-    $('#modalQuestion').modal();
+
 	*/
 
 	/**
 	 * handler: delete files 
 	 */
-	$('#table_files').on('click', '[data-action="delete"]', function (e) {
+	$('#table_files').on('click', '[data-action="delete"]', function () {
 		var 
 			$pathFile = $(this).attr('data-path');
 
-		$.post({
-			url: $relUrl + 'Utils/DeleteFiles.php',
-			dataType: 'json',
-			data: {
-				'pathFile': $pathFile
-			},
-			beforeSend: function () {
-				$(this).addClass('disabled');
-			},
-			success: function (data) {
-				if (data['result'] == 'error') {
-					showThenHideMsg(data['msg'], true);
-				} else {
-					$.when($tbody
-							.html(data['content']))
-							.done(function () {
-								$.fx.off = true; 
-								showThenHideMsg('File successfully deleted');
-							});
-				}
-			},
-			error: errorHandler = function () {
-				showThenHideMsg('Error deleting file', true);
-			}
-		});
+		generateModalWindow('Are you sure you want to delete the file?', 'Warning!', $pathFile);
+        $('#modalQuestion').modal();
+	});
+
+
+	$('footer').on('click', '#btnMesCancel, #btnMesOk', function () {
+        var
+            $pathFile = $('#formMessageVal').attr('value'),
+            $idBtn = $(this).attr('id');
+
+        if ($idBtn == 'btnMesOk') {
+            $.post({
+                url: $relUrl + 'Utils/DeleteFiles.php',
+                dataType: 'json',
+                data: {
+                    'pathFile': $pathFile
+                },
+                beforeSend: function () {
+                    $('#btnMesCancel').trigger('click');
+                },
+                success: function (data) {
+                    if (data['result'] == 'error') {
+                        showThenHideMsg(data['msg'], true);
+                    } else {
+                        $.when($tbody
+                            .html(data['content']))
+                            .done(function () {
+                                $.fx.off = true;
+                                showThenHideMsg('File successfully deleted');
+                            });
+                    }
+                },
+                error: errorHandler = function () {
+                    showThenHideMsg('Error deleting file', true);
+                }
+            });
+        }
+        $('#modalQuestion').detach();
 	});
 });
-
 
 function isValidName(name) {
 	return /^[\wa-яёА-ЯЁ\^\-\+\.\,\_]+$/.test(name);
@@ -335,61 +345,69 @@ function showThenHideMsg(msg, error = null) {
 		.hide(500);
 }
 
-function generateModalWindow(msg, header) {
-	$modalQuestion = $('<div>', {
-		class: 'modal fade',
-		id: 'modalQuestion',
-		tabindex: '-1',
-		role: 'dialog',
-		'aria-labelledby': 'modalQuestionTitle',
-		'aria-hidden': 'true',
-		append: $('<div>', {
-			class: 'modal-dialog modal-dialog-centered',
-			role: 'document',
+function generateModalWindow(msg, header, data = null) {
+	var
+		$modalQuestion = $('<div>', {
+			class: 'modal fade',
+			id: 'modalQuestion',
+			tabindex: '-1',
+			role: 'dialog',
+			'aria-labelledby': 'modalQuestionTitle',
+			'aria-hidden': 'true',
 			append: $('<div>', {
-				class: 'modal-content'
-			})
-		})
-	}).appendTo('footer');;
-
-	$modalQuestionHeader = $('<div>', {
-		class: 'modal-header bg-warning',
-		append: $('<h5>', {
-				class: 'modal-title',
-				text: header
-			})
-			.add($('<button>', {
-				class: 'close',
-				type: 'button',
-				'data-dismiss': 'modal',
-				'aria-label': 'Close',
-				append: $('<span>', {
-					'aria-hidden': 'true',
-					html: '&times;'
+				class: 'modal-dialog modal-dialog-centered',
+				role: 'document',
+				append: $('<div>', {
+					class: 'modal-content'
 				})
-			}))
-	}).appendTo('#modalQuestion .modal-content');
-
-	$modalQuestionBody = $('<div>', {
-		class: 'modal-body',
-		append: $('<p>', {
-			class: 'question-text',
-			text: msg
-		})
-	}).appendTo('#modalQuestion .modal-content');
-
-	$modalQuestionFooter = $('<div>', {
-		class: 'modal-footer',
-		append: $('<button>', {
-				type: 'button',
-				class: 'btn btn-secondary',
-				'data-dismiss': 'modal',
-				text: 'CANCEL'
 			})
-			.add($('<button>', {
-				type: 'button',
-				class: 'btn btn-primary',
-				text: 'OK'
+		}).appendTo('footer'),
+
+		$modalQuestionHeader = $('<div>', {
+			class: 'modal-header bg-warning',
+			append: $('<h5>', {
+					class: 'modal-title',
+					text: header
+				})
+				.add($('<button>', {
+					class: 'close',
+					type: 'button',
+					'data-dismiss': 'modal',
+					'aria-label': 'Close',
+					append: $('<span>', {
+						'aria-hidden': 'true',
+						html: '&times;'
+					})
+				}))
+		}).appendTo('#modalQuestion .modal-content'),
+
+		$modalQuestionBody = $('<div>', {
+			class: 'modal-body',
+			append: $('<p>', {
+				class: 'question-text',
+				text: msg
+			})
+			.add($('<input>', {
+				'type': 'hidden',
+				'id': 'formMessageVal',
+				'value': data
 			}))
-	}).appendTo('#modalQuestion .modal-content');
+		}).appendTo('#modalQuestion .modal-content'),
+
+		$modalQuestionFooter = $('<div>', {
+			class: 'modal-footer',
+			append: $('<button>', {
+					type: 'button',
+					id: 'btnMesCancel',
+					class: 'btn btn-secondary',
+					'data-dismiss': 'modal',
+					text: 'CANCEL'
+				})
+				.add($('<button>', {
+					type: 'button',
+					id: 'btnMesOk',
+					class: 'btn btn-primary',
+					text: 'OK'
+				}))
+		}).appendTo('#modalQuestion .modal-content');
 }

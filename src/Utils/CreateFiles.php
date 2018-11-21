@@ -21,7 +21,7 @@
 		$type = $_POST['type'];
 		$isDir = $type == 'folder' ? true : false;
 		$path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-		$relativePath = preg_replace('/\/src\//', '', $path, 1);
+		$relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
 		$parentDir = ROOT . $relativePath;
 		$pathNewFile = $parentDir . $name;
 		$isValidName = FileFunc::isValidName($name);
