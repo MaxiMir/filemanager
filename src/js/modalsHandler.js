@@ -1,11 +1,3 @@
-	// var $blockAnim = $('<div>', {
-	// 	class: 'bouncing-loader',
-	// 	append: $('<div>')
-	// 				.add($('<div>'))
-	// 				.add($('<div>'))
-	// 			index.php	.add($('<div>'))
-	// });	
-
 $(function () {
 	var 
 		$msg = $('.main-message'),
@@ -283,20 +275,20 @@ $(function () {
 	});
 
 
-	$('footer').on('click', '#btnMesCancel, #btnMesOk', function () {
+	$('footer').on('click', '#btnMesCancel, #btnMesOk', function (e) {
         var
             $pathFile = $('#formMessageVal').attr('value'),
             $idBtn = $(this).attr('id');
-
+        
+        e.preventDefault();
+        $('#spanClose').trigger('click');
+        
         if ($idBtn == 'btnMesOk') {
             $.post({
                 url: $relUrl + 'Utils/DeleteFiles.php',
                 dataType: 'json',
                 data: {
                     'pathFile': $pathFile
-                },
-                beforeSend: function () {
-                    $('#btnMesCancel').trigger('click');
                 },
                 success: function (data) {
                     if (data['result'] == 'error') {
@@ -375,6 +367,7 @@ function generateModalWindow(msg, header, data = null) {
 					'data-dismiss': 'modal',
 					'aria-label': 'Close',
 					append: $('<span>', {
+						id: 'spanClose',
 						'aria-hidden': 'true',
 						html: '&times;'
 					})
@@ -388,9 +381,9 @@ function generateModalWindow(msg, header, data = null) {
 				text: msg
 			})
 			.add($('<input>', {
-				'type': 'hidden',
-				'id': 'formMessageVal',
-				'value': data
+				type: 'hidden',
+				id: 'formMessageVal',
+				value: data
 			}))
 		}).appendTo('#modalQuestion .modal-content'),
 
@@ -411,3 +404,12 @@ function generateModalWindow(msg, header, data = null) {
 				}))
 		}).appendTo('#modalQuestion .modal-content');
 }
+
+
+	// var $blockAnim = $('<div>', {
+	// 	class: 'bouncing-loader',
+	// 	append: $('<div>')
+	// 				.add($('<div>'))
+	// 				.add($('<div>'))
+	// 			index.php	.add($('<div>'))
+	// });	
