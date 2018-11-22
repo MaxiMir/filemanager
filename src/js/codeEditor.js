@@ -44,11 +44,9 @@ $(function () {
 				$('#btnSave, #btnRemove').attr('disabled', 'disabled');
 			},
 			success: function (data) {
-				if (data['result'] == 'error') {
-					$text = data['msg'];
-				} else {
+                var $text = data['result'] === 'success' ? 'File has been successfully modified' : data['msg'];
+				if (data['result'] === 'success') {
 					source = code;
-					$text = 'File has been successfully modified';
 				}
 
 				$msg
