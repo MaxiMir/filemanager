@@ -9,8 +9,6 @@
     require 'FileData/PathInfo.php';
     require 'Render.php';
 
-
-
     $configuration = [
         'settings' => [
             'displayErrorDetails' => true,
@@ -49,7 +47,7 @@
     $app->run();
 
     /* TODO:
-        * поднять вверх при скролле
+        * выбор нескольких файлов
         * появление нескольких модальных окон
         * увеличение шрифтов в редакторе
     	* index.php и .htaccess в корне
