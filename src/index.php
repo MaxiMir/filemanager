@@ -1,13 +1,15 @@
 <?php
 
-    require 'vendor/autoload.php';
-    require 'FileData/PathInfo.php';
-    require 'Render.php';
-
     use \Psr\Http\Message\ServerRequestInterface as Request;
     use \Psr\Http\Message\ResponseInterface as Response;
     use FM\FileData\PathInfo;
     use FM\Render;
+    
+    require 'vendor/autoload.php';
+    require 'FileData/PathInfo.php';
+    require 'Render.php';
+
+
 
     $configuration = [
         'settings' => [
@@ -48,6 +50,7 @@
 
     /* TODO:
         * поднять вверх при скролле
+        * появление нескольких модальных окон
         * увеличение шрифтов в редакторе
     	* index.php и .htaccess в корне
     	* настроить namespace

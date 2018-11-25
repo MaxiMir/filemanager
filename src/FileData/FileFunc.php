@@ -40,7 +40,13 @@
             } else {
                 return FM_REL_PATH . 'css/img/default.png';
             }           
-        }   
+        }
+
+        public function getRelPath($url)
+        {
+            $path = parse_url($url, PHP_URL_PATH);
+            return preg_replace('/\/'. FM_FOLDER_NAME .'\//', '', $path, 1);
+        }
 
         public static function getFileContent($fPath) {
             $content = [];
