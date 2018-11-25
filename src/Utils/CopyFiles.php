@@ -1,7 +1,9 @@
 <?php
-    
-    use \FM\Render;  
-    use \FM\FileData\PathInfo; 
+
+    namespace FM\Utils;
+
+    use FM\Render;
+    use FM\FileData\PathInfo;
     
     require_once "../config/Conf.php";
     require_once '../FileData/FileFunc.php';

@@ -2,9 +2,10 @@
 
     namespace FM\Utils;
 
-	require_once "../config/Conf.php";
+	require "../config/Conf.php";
+    require "ChangeContentInterface.php";
 
-	class ChangeContent
+	class ChangeContent implements ChangeContentInterface
     {
         private $code;
         private $pathFile;
@@ -24,11 +25,11 @@
                 $query = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY);
                 $urlQuery = ($query != '') ? str_replace('url=', '', $query) : '';
                 $this->pathFile = ROOT . $relativePath . $urlQuery;
-                $this->writeFile();
+                $this->rewriteFile();
             }
         }
 
-        private function writeFile()
+        public function rewriteFile()
         {
             if (!is_writable($this->pathFile)) {
                 $this->data['msg'] .=  'File is not writable <br>';
