@@ -1,13 +1,13 @@
 $(function () {
-	var 
+	var
 		$msg = $('.main-message'),
-		$tbody = $('#table_files tbody'),
+		$tbody = $('#table_files tbody');
 		$relUrl = $('main').attr('data-relurl');
-	
+
 	$('[data-toggle="tooltip"]').tooltip();
 
 	/**
-	 * handler: create files 
+	 * handler: create files
 	 */
 	$('.create_files input[type=text]').on('blur', function () {
 		var
@@ -78,7 +78,7 @@ $(function () {
 	});
 
 	/**
-	 * handler: uploads files 
+	 * handler: uploads files
 	 */
 	$('#formUploadsFiles').on('submit', function (e) {
 		var
@@ -158,7 +158,7 @@ $(function () {
 	});
 
 	/**
-	 * handler: rename files 
+	 * handler: rename files
 	 */
 	$('#table_files').on('click', '[data-action="rename"]', function (e) {
 		e.preventDefault();
@@ -257,32 +257,42 @@ $(function () {
 	});
 
 	/**
-	 * handler: copy files 
+	 * handler: copy files
 	 */
-	/*
 
-	*/
+
+
+
+
 
 	/**
-	 * handler: delete files 
+	 * handler: delete files
 	 */
 	$('#table_files').on('click', '[data-action="delete"]', function () {
-		var 
+		var
 			$pathFile = $(this).attr('data-path');
 
 		generateModalWindow('Are you sure you want to delete the file?', 'Warning!', $pathFile);
         $('#modalQuestion').modal();
 	});
 
+	$(document).on('click', function (e) {
+		var modal = $("#modalQuestion");
+		if ($('footer').is(':has(#modalQuestion)')) {
+			if (!modal.is(e.target) && modal.has(e.target).length === 0) {
+				$('#modalQuestion').detach();
+			}
+		}
+	});
 
-	$('footer').on('click', '#btnMesCancel, #btnMesOk', function (e) {
+	$('body').on('click', '#btnMesCancel, #btnMesOk', function (e) {
         var
             $pathFile = $('#formMessageVal').attr('value'),
             $idBtn = $(this).attr('id');
-        
+
         e.preventDefault();
         $('#spanClose').trigger('click');
-        
+
         if ($idBtn == 'btnMesOk') {
             $.post({
                 url: $relUrl + 'Utils/DeleteFiles.php',
@@ -307,8 +317,24 @@ $(function () {
                 }
             });
         }
+
         $('#modalQuestion').detach();
 	});
+
+	/**
+	 * handler: scroll
+	 */
+    $(window).scroll(function() {
+    	var
+			$isScrollUpExists = $('footer').is(':has(#scroll-up)');
+
+        if ($(this).scrollTop() < 700 && $isScrollUpExists) {
+        	$('#scroll-up').hide();
+		} else {
+        	if (!$isScrollUpExists) { generateScrollBlock(); }
+            $('#scroll-up').show();
+        }
+    });
 });
 
 function isValidName(name) {
@@ -335,6 +361,47 @@ function showThenHideMsg(msg, error = null) {
 		.show()
 		.delay(1500)
 		.hide(500);
+}
+
+function generateScrollBlock() {
+	var
+		$scroll = $('<div>', {
+			id: 'scroll-up',
+            css: {
+                width: 35,
+                height: 35,
+				position: 'fixed',
+                right: '3%',
+                bottom: '2%',
+                opacity: 0.6,
+                cursor: 'pointer'
+			},
+            on: {
+                click: function() {
+                    $(window).scrollTop(0);
+                },
+                mouseenter: function() {
+                    $(this).css({ 'opacity': '1',
+								  '-webkit-transform': 'scale(1.3)',
+								  '-ms-transform': 'scale(1.3)',
+								  'transform': 'scale(1.3)'
+					});
+				},
+                mouseleave: function() {
+                    $(this).css({ 'opacity': '0.6',
+								  '-webkit-transform': 'scale(1.0)',
+								  '-ms-transform': 'scale(1.0)',
+								  'transform': 'scale(1.0)'
+                    });
+				}
+			},
+			append: $('<img>', {
+				src: $relUrl + 'css/img/control/up-arrow.png',
+				alt: 'scroll up',
+				title: 'scroll up',
+				width: '35px'
+            })
+		}).appendTo('footer');
 }
 
 function generateModalWindow(msg, header, data = null) {
@@ -412,4 +479,4 @@ function generateModalWindow(msg, header, data = null) {
 	// 				.add($('<div>'))
 	// 				.add($('<div>'))
 	// 			index.php	.add($('<div>'))
-	// });	
+	// });
