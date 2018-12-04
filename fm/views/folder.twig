@@ -9,7 +9,7 @@
                     {% if breadcrumbs %}
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/src">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ FM_REL_PATH }}">Home</a></li>
                                 {% autoescape false %}
                                     {{ breadcrumbs }}
                                 {% endautoescape %}    
@@ -20,23 +20,29 @@
             </div> 
             <div class="row">
                 <div class="col-12">
-                    <table class="table table-dark text-center" id="table_files">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col" class="text-left">Name</th>
-                                <th scope="col">Size</th>
-                                <th scope="col">Date of change</th>
-                                <th scope="col">Rename</th>
-                                <th scope="col">Copy</th>
-                                <th scope="col">Move</th>
-                                <th scope="col">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {%include 'table_files.twig'%} 
-                        </tbody>
-                    </table>        
+                    {% if contentData['folders'] %}
+                        <table class="table table-dark text-center" id="table_files">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col" class="text-left">Name</th>
+                                    <th scope="col">Size</th>
+                                    <th scope="col">Date of change</th>
+                                    <th scope="col">Rename</th>
+                                    <th scope="col">Copy</th>
+                                    <th scope="col">Move</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%include 'table_files.twig'%} 
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="text-center text-muted">  
+                            <p>There are no files available....</p>
+                        </div>
+                    {% endif %}          
                 </div>
             </div>  
         </div>
