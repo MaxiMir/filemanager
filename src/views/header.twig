@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File: {{ header }}</title>
+    <meta name="description" content="You`re here: {{ header }}" />
+    <link rel="shortcut icon" href="/{{ FM_FOLDER_NAME }}/css/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/{{ FM_FOLDER_NAME }}/css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    {%block scripts%}
+        <script src="{{ FM_REL_PATH }}js/modalsHandler.js"></script>
+    {%endblock%}
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                        <a class="navbar-brand" href="/{{ FM_FOLDER_NAME }}/">File-manager</a>
+                        <div class="collapse navbar-collapse">
+                            {%block navbar%}
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="modal" data-target="#modalNewFile" href="javascript:void(0);">Create File</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="modal" data-target="#modalNewFolder" href="javascript:void(0);">Create Folder</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="modal" data-target="#modalUploadsFiles" href="javascript:void(0);">Upload File</a>
+                                </li>
+                            </ul>
+                            {%endblock%}
+                            <form class="form-inline my-2 my-lg-0">
+                                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                                <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+                            </form>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
