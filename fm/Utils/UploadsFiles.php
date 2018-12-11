@@ -1,6 +1,8 @@
 <?php
 
 	namespace FM\Utils;
+
+    require_once '../../vendor/autoload.php';
     
     use FM\Render\HtmlMarkup;
     use FM\FileData\FileFunc;
