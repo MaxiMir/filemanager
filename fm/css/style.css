@@ -25,8 +25,12 @@
 	opacity: 0.6;
 }
 
-tr:hover .type_img {
+.table-dark tr:hover .type_img {
 	opacity: 1;
+}
+
+.table-dark td {
+	height: 82px;
 }
 
 .control_item:hover {

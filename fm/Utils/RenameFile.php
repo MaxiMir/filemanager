@@ -1,58 +1,61 @@
 <?php
 
+    namespace FM\Utils;
+
+    require_once '../../vendor/autoload.php';
+
     use \FM\Render\HtmlMarkup;
     use \FM\FileData\FileFunc;
     use \FM\FileData\PathInfo;
 
-    require_once '../../vendor/autoload.php';
+    class RenameFile implements UtilsInterface
+    {
+        use Json;
 
-	$data = [
-		'msg' => '',
-		'result' => 'error'
-	];
+        private $parentDir;
+        private $pathOldFile;
+        private $pathNewFile;
 
-	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-		$data['msg'] = "Incorrect method of sending data.<br>";
-	} else {
-    	$oldName = $_POST['oldName'];
-    	$newName = $_POST['newName'];
-    	$type = $_POST['type'];
-		$path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-		$relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
-		$parentDir = ROOT . $relativePath;    
-    	$pathOldFile = $parentDir . $oldName;
-    	$pathNewFile = $parentDir . $newName;
-		$isValidName = FileFunc::isValidName($newName);
+        public function __construct()
+        {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                $this->data['msg'] = "Incorrect method of sending data.<br>";
+            } else {
+                $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+                $relativePath = preg_replace('/\/' . FM_FOLDER_NAME . '/', '', $path, 1);
+                $oldName = FileFunc::cleanData($_POST['oldName']);
+                $newName = FileFunc::cleanData($_POST['newName']);
+                $this->parentDir = ROOT . $relativePath;
+                $this->pathOldFile = $this->parentDir . $oldName;
+                $this->pathNewFile = $this->parentDir . $newName;
+                $isValidName = FileFunc::isValidName($newName);
 
-		if ($newName == '') {
-			$data['msg'] .= "File name is empty <br>";
-		} elseif ($oldName == $newName) {
-		    $data['msg'] .= "File names are not individual <br>";
-		} elseif (strlen($newName) > 255) {
-			$data['msg'] .= "File name is too long <br>";
-		} elseif (!$isValidName) {
-			$data['msg'] .= "It is recommended not to use these symbols: '! @ # $ & ~ % * ( ) [ ] { } ' \" \\ / : ; > < `' and space in the file name <br>";
-		}
+                if (!is_dir($this->parentDir)) {
+                    $this->data['msg'] = "Path is incorrect: '{$this->parentDir}'";
+                } elseif ($oldName == $newName) {
+                    $this->data['msg'] = 'File names are not individual';
+                } elseif (!$isValidName) {
+                    $this->data['msg'] = 'File name must be between 0 and 255 <br> and it is recommended not to use these symbols: "! @ # $ & ~ % * ( ) [ ] { } \' " \\ / : ; > < `" and space in the file name';
+                } elseif (file_exists($this->pathNewFile)) {
+                    $this->data['msg'] = "File with name '{$newName}' already exist";
+                } else {
+                    $this->run();
+                }
+            }
+        }
 
-		if (!is_dir($parentDir)) {
-			$data['msg'] .= "Path is incorrect: '{$parentDir}' <br>";
-		}
-
-		if (file_exists($pathNewFile)) {
-			$data['msg'] .= "File with name '{$newName}' already exist";
-		}
-
-		if ($data['msg'] == '') {
-		    if(!rename($pathOldFile, $pathNewFile)) {
-		        $data['msg'] = 'Failed to rename file';
-		    } else {
-		        $data['result'] = 'success';
-	        	$path = new PathInfo($parentDir);
-	        	$contentData = $path->getContentData();
-				$data['content'] = Render::generate('table_files.twig', ['contentData' => $contentData]); 				
-		    }
-		}	
+        private function run()
+        {
+            if(!rename($this->pathOldFile, $this->pathNewFile)) {
+                $this->data['msg'] = 'Failed to rename file';
+            } else {
+                $this->data['result'] = 'success';
+                $path = new PathInfo($this->parentDir);
+                $contentData = $path->getContentData();
+                $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
+            }
+        }
 	}
 
-	header('Content-Type: application/json');
-	echo json_encode($data);
+    $newRenameFile = new RenameFile();
+    $newRenameFile->echoJsonEncode();

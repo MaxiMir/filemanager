@@ -4,53 +4,47 @@
 
     require_once '../../vendor/autoload.php';
 
-	class ChangeContent implements ChangeContentInterface
+    use FM\FileData\FileFunc;
+
+	class ChangeContent implements UtilsInterface
     {
-        private $code;
+        use Json;
+
         private $pathFile;
-        private $data = [
-            'msg' => '',
-            'result' => 'error'
-        ];
+        private $code;
 
         public function __construct()
         {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                $this->data['msg'] = "Incorrect method of sending data <br>";
+                $this->data['msg'] = 'Incorrect method of sending data';
             } else {
-                $this->code = $_POST['code'];
-                $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-                $relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
                 $query = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY);
                 $urlQuery = ($query != '') ? str_replace('url=', '', $query) : '';
+                $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+                $relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
                 $this->pathFile = ROOT . $relativePath . $urlQuery;
-                $this->rewriteFile();
-            }
-        }
-
-        public function rewriteFile()
-        {
-            if (!is_writable($this->pathFile)) {
-                $this->data['msg'] .=  'File is not writable <br>';
-            } else {
-                $handle = fopen($this->pathFile, 'w');
-                if ($handle) {
-                    try {
-                        fwrite($handle, $this->code);
-                    } finally {
-                        fclose($handle);
-                        $this->data['result'] =  'success';
-                    }
+                $this->code = FileFunc::cleanData($_POST['code']);
+                if (!is_writable($this->pathFile)) {
+                    $this->data['msg'] = 'File is not writable';
+                } else {
+                    $this->run();
                 }
             }
         }
 
-        public function echoJsonEncode()
+        private function run()
         {
-            header('Content-Type: application/json');
-            echo json_encode($this->data);
+            $handle = fopen($this->pathFile, 'w');
+            if ($handle) {
+                try {
+                    fwrite($handle, $this->code);
+                } finally {
+                    fclose($handle);
+                    $this->data['result'] = 'success';
+                }
+            }
         }
     }
 
-    $newContent = new ChangeContent();
-    $newContent->echoJsonEncode();
+    $newChangeContent = new ChangeContent();
+    $newChangeContent->echoJsonEncode();

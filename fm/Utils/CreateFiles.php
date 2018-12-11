@@ -9,72 +9,53 @@
     use FM\FileData\PathInfo;
 
 
-    class CreateFiles implements CreateFilesInterface
+    class CreateFiles implements UtilsInterface
     {
+        use Json;
+
         private $name;
-        private $type ;
-        private $isDir;
-        private $relativePath;
         private $parentDir;
         private $pathNewFile;
-        private $isValidName;
-        private $data = [
-            'msg' => '',
-            'result' => 'error'
-        ];
+        private $isDir;
 
         public function __construct()
         {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                $this->data['msg'] = "Incorrect method of sending data <br>";
+                $this->data['msg'] = 'Incorrect method of sending data';
             } else {
-                $this->name = $_POST['name'];
-                $this->type = $_POST['type'];
-                $this->isDir = $this->type == 'folder' ? true : false;
-                $this->relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
-                $this->parentDir = ROOT . $this->relativePath;
+                $relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
+                $type = FileFunc::cleanData($_POST['type']);
+                $this->name = FileFunc::cleanData($_POST['name']);
+                $this->parentDir = ROOT . $relativePath;
                 $this->pathNewFile = $this->parentDir . $this->name;
-                $this->isValidName = FileFunc::isValidName($this->name);
-                $this->createFile();
-            }
-        }
+                $this->isDir = $type == 'folder' ? true : false;
+                $isValidName = FileFunc::isValidName($this->name);
 
-        public function createFile()
-        {
-            if ($this->name === '') {
-                $this->data['msg'] .= "File name is empty <br>";
-            } elseif (strlen($this->name) > 255) {
-                $this->data['msg'] .= "File name is too long <br>";
-            } elseif (!$this->isValidName) {
-                $this->data['msg'] .= "It is recommended not to use these symbols: '! @ # $ & ~ % * ( ) [ ] { } ' \" \\ / : ; > < `' and space in the file name <br>";
-            }
-
-            if (file_exists($this->pathNewFile)) {
-                $this->data['msg'] .= "File with name '{$this->name}' already exist <br>";
-            }
-
-            if (!is_dir($this->parentDir)) {
-                $this->data['msg'] .= "Path is incorrect <br> {$this->relativePath}  <br>";
-            }
-
-            if ($this->data['msg'] == '') {
-                $resOper = $this->isDir ? mkdir($this->pathNewFile) : touch($this->pathNewFile);
-
-                if (!$resOper) {
-                    $this->data['msg'] .= "Could not create file '{$this->name}' <br>";
+                if (!is_dir($this->parentDir)) {
+                    $this->data['msg'] = "Path is incorrect:<br> {$relativePath}";
+                } elseif (!$isValidName) {
+                    $this->data['msg'] = 'File name must be between 0 and 255 <br> and it is recommended not to use these symbols: "! @ # $ & ~ % * ( ) [ ] { } \' " \\ / : ; > < `" and space in the file name';
+                } elseif (file_exists($this->pathNewFile)) {
+                    $this->data['msg'] = "File with name '{$this->name}' already exist";
                 } else {
-                    $this->data['result'] = "success";
-                    $path = new PathInfo($this->parentDir);
-                    $contentData = $path->getContentData();
-                    $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
+                    $this->run();
                 }
+
             }
         }
 
-        public function echoJsonEncode()
+        private function run()
         {
-            header('Content-Type: application/json');
-            echo json_encode($this->data);
+            $resOper = $this->isDir ? mkdir($this->pathNewFile) : touch($this->pathNewFile);
+
+            if (!$resOper) {
+                $this->data['msg'] .= "Could not create file '{$this->name}'";
+            } else {
+                $this->data['result'] = 'success';
+                $path = new PathInfo($this->parentDir);
+                $contentData = $path->getContentData();
+                $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
+            }
         }
     }
 

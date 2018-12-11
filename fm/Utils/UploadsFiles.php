@@ -6,13 +6,11 @@
     use FM\FileData\FileFunc;
     use FM\FileData\PathInfo;
 
-	class UploadsFiles
+	class UploadsFiles implements UtilsInterface
 	{
+	    use Json;
+
 		private $parentDir;
-		private $data = [
-				'msg' => '',
-				'result' => 'error'
-		];
 		
 		public function __construct()
 		{
@@ -24,34 +22,28 @@
 			if (!empty($_FILES)) {
 				$relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
 				$this->parentDir = ROOT . $relativePath;
-				$this->upload();
+                if (!is_dir($this->parentDir)) {
+                    $this->data['msg'] = "Path is incorrect: <br>'{$this->parentDir}'";
+                } else {
+                    $this->run();
+                }
 			}
 		}
 		
-		public function upload()
+		private function run()
 		{
-			if (!is_dir($this->parentDir)) {
-				$this->data['msg'] .= "Path is incorrect: <br>'{$this->parentDir}' <br>";
-			} else {
-				foreach($_FILES as $file) {
-					if (!move_uploaded_file($file['tmp_name'], $this->parentDir . basename($file['name']))) {
-						$this->data['msg'] = "An error occurred while loading files <br>";
-					}
-				}
+            foreach($_FILES as $file) {
+                if (!move_uploaded_file($file['tmp_name'], $this->parentDir . basename($file['name']))) {
+                    $this->data['msg'] = 'An error occurred while loading files';
+                }
+            }
 				
-				if ($this->data['msg'] == '') {
-					$this->data['result'] = 'success';
-					$path = new PathInfo($this->parentDir);
-					$contentData = $path->getContentData();
-					$this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
-				}
-			}
-		}
-		
-		public function echoJsonEncode()
-		{
-			header('Content-Type: application/json');
-			echo json_encode($this->data);
+            if ($this->data['msg'] == '') {
+                $this->data['result'] = 'success';
+                $path = new PathInfo($this->parentDir);
+                $contentData = $path->getContentData();
+                $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
+            }
 		}
 	}
 	
