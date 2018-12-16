@@ -1,0 +1,72 @@
+{%include 'header.twig'%}
+
+     <main role="main" data-relurl="{{ FM_REL_PATH }}">   
+        <div class="row">  
+                <div class="col-12 text-center">
+                    <h1 class="page-header">{{ header }}</h1>
+                    <h2 class="main-message text-success"></h2>
+                    {% if breadcrumbs %}
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ FM_REL_PATH }}">Home</a></li>
+                                {% autoescape false %}
+                                    {{ breadcrumbs }}
+                                {% endautoescape %}    
+                            </ol>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row main_content">
+                <div class="col-3">
+                    <div class="block-list_paths" id="list_paths">
+                        <p class="list-group-item list_paths-header list-group-item-dark text-white text-center font-weight-bold">{{ ROOT }}</p>
+                        {%include 'list_dirs.twig'%}
+                        <div class="list-group-item-dark text-center p-2 d-none">
+                            <button type="button" class="btn btn-secondary btn-sm btn-cancel disabled">CANCEL</button>
+                            <button type="submit" class="btn btn-primary btn-sm btn-ok disabled">INSERT</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div id="table-block">
+                        <table class="table table-dark text-center" id="table_files">
+                            <thead>
+                            <tr>
+                                <th scope="col" id="checkboxControl">
+                                    <input type="checkbox" id="allCheckboxes" class="d-none">
+                                    <a href="javascript:void(0);" data-action="activate-checkbox" title="Show file operations menu">
+                                        <img src="{{ FM_REL_PATH }}css/img/control/check.png" width="20px" alt="Show file operations menu">
+                                    </a>
+                                </th>
+                                <th scope="col" class="text-left" colspan="2">
+                                    <a href="javascript:void(0);" data-orderBy="name" class="btn disabled">
+                                        <img src="{{ FM_REL_PATH }}/css/img/control/arrow.png" alt="sort by id" title="sort by id" width="20px">
+                                    </a>
+                                    <span>Name</span>
+                                </th>
+                                <th scope="col"></th>
+                                <th scope="col">
+                                    <a href="javascript:void(0);" data-orderBy="size" class="btn">
+                                        <img src="{{ FM_REL_PATH }}css/img/control/arrow.png" alt="sort by id" title="sort by id" width="20px">
+                                    </a>
+                                    Size
+                                </th>
+                                <th scope="col">
+                                    <a href="javascript:void(0);" data-orderBy="date" class="btn">
+                                        <img src="{{ FM_REL_PATH }}css/img/control/arrow.png" alt="sort by id" title="sort by id" width="20px">
+                                    </a>
+                                    <span>Date</span>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {%include 'table_files.twig'%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>  
+	</main>
+
+{%include 'footer.twig'%}

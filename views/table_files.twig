@@ -1,0 +1,84 @@
+<tr id="actions-panel" class="d-none">
+    <td colspan="6">
+        <a href="javascript:void(0);" title="copy files" class="actions-panel-item btn disabled">
+            <img src="{{ FM_REL_PATH }}css/img/control/copy.png" class="control_item" width="30px" alt="icon copy">
+            <p class="copy-text">Copy files</p>
+        </a>
+
+        <a href="javascript:void(0);" title="move files" class="actions-panel-item btn disabled">
+            <img src="{{ FM_REL_PATH }}css/img/control/move.png" class="control_item" width="30px" alt="icon move">
+            <p class="move-text">Move Files</p>
+        </a>
+
+        <a href="javascript:void(0);" title="delete files" data-action="delete" class="actions-panel-item btn disabled">
+            <img src="{{ FM_REL_PATH }}css/img/control/delete.png" class="control_item" width="30px" alt="icon delete">
+            <p class="delete-text">Delete Files</p>
+        </a>
+        <span id="closePanel">&#10006</span>
+    </td>
+</tr>
+{% if contentData['folders'] or contentData['files'] %}
+    {% for name, data in contentData['folders'] %}
+        <tr class="file_field" data-path="{{ data.path }}" data-name="{{ name }}">
+            <td>
+                <input type="checkbox" class="d-none" value="{{ name }}">
+            </td>
+
+            <td class="type_img text-center ">
+                <a href="{{ data.url }}" title="view" class="type_img-d {{ data.classNewFile }}">
+                    <img src="{{ FM_REL_PATH }}css/img/folder.png" width="40px">
+                </a>
+            </td>
+
+            <td class="link-file text-left">
+                <a href="{{ data.url }}" data-name="{{ name }}" data-type="folder" title="view" class="badge badge-info link_files">{{ name }}</a>
+            </td>
+
+            <td>
+                <a href="javascript:void(0);" title="rename {{ name }}" data-action="rename" data-name="{{ name }}" data-path="{{ data.path }}" class="btn">
+                    <img src="{{ FM_REL_PATH }}css/img/control/edit.png" width="35px" class="control_item" alt="icon rename">
+                </a>
+            </td>
+
+            <td>{{ data.size }}</td>
+
+            <td class="file_change_date">{{ data.fileChangeDate }}</td>
+
+
+        </tr>
+    {% endfor %}
+
+    {% for name, data in contentData['files'] %}
+       <tr class="file_field">
+           <td class="link-file">
+               <input type="checkbox" class="d-none" value="{{ name }}">
+           </td>
+
+          <td class="type_img align-middle">
+             <a href="{{ data.url }}" title="view" class="type_img-f {{ data.classNewFile }}">
+                <img src="{{ data.img }}" width="40px" class="rounded">
+             </a>
+          </td>
+
+          <td class="link-file text-left">
+             <a href="{{ data.url }}" data-name="{{ name }}" data-type="file" title="view" class="badge badge-secondary link_files">{{ name }}</a>
+          </td>
+
+           <td>
+               <a href="javascript:void(0);" title="rename {{ name }}" data-action="rename" data-name={{ name }} data-path="{{ data.path }}" class="btn">
+                   <img src="{{ FM_REL_PATH }}css/img/control/edit.png" width="35px" class="control_item" alt="icon rename">
+               </a>
+           </td>
+
+          <td class="file_size">{{ data.size }}</td>
+
+          <td class="file_change_date">{{ data.fileChangeDate }}</td>
+       </tr>
+    {% endfor %}
+{% else %}
+
+    <tr>
+        <td colspan="6">NO FILES...</td>
+    </tr>
+
+{% endif %}
