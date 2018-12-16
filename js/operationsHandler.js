@@ -1,5 +1,6 @@
 $(function () {
 		msg = $('.main-message'),
+		leftNavSize = 285,
     	tbody = $('#table_files tbody'),
 		relUrl = $('main').attr('data-relurl');
 
@@ -21,33 +22,68 @@ $(function () {
         },
         resize: function ( event, ui ) {
         	var
-				size = $('.main_content').width() - ui.size.width - 30,
-                indent = Math.abs(ui.size.width - ui.originalSize.width);
+                width = $('.main_content').width() - ui.size.width - 30, // 30 - left, right padding
+                left = ui.size.width - leftNavSize;
 
             $('#table_files').css({
-				'left': indent + 'px',
-				'width': size + 'px'
+				'left': left + 'px',
+				'width': width + 'px'
 			});
 		},
         stop: function ( event, ui ) {
-            $('#table_files').resizable({disabled: true});
+            $('#table_files').resizable({ disabled: true });
     	}
     });
 
 
     /**
-     * HANDLER: scroll
+     * HANDLER: sidebar disclosure
      */
-    $(window).scroll(function () {
-        var
-            isScrollUpExists = $('footer').is(':has(#scroll-up)');
+	$('#list_paths').on('click', '.nav_control-link', function () {
+		var
+			li = $(this).closest('.list-group-item'),
+			img = $(this).find('img[alt="show"]'),
+			path = $(this).attr('data-path'),
+            ul = li.find('.list-group');
 
-        if ($(this).scrollTop() < 700 && isScrollUpExists) {
-            $('#scroll-up').hide();
-        } else {
-            if (!isScrollUpExists) { generateScrollBlock(); }
-            $('#scroll-up').show();
-        }
+		if ($(this).hasClass('active')) {
+            $(this).removeClass('active');
+            ul.hide('fast', function () {
+                img.css({
+					'animation': 'backRotate 0.2s',
+					'animation-fill-mode': 'forwards'
+				});
+            });
+		} else {
+            $(this).addClass('active');
+            img.css({
+                'animation': 'rotate 0.2s',
+                'animation-fill-mode': 'forwards'
+            });
+
+            if (ul.length !== 0) {
+                ul.show('fast');
+            } else {
+                $.post({
+                    url: relUrl + 'Utils/GetListDirs.php',
+                    dataType: 'json',
+                    data: {
+                        'path': path
+                    },
+                    success: function (data) {
+                        if (data['result'] === 'error') {
+                            showThenHideMsg(data['msg'], true);
+                        } else {
+                            li.append(data['content']);
+                        }
+                    },
+                    error: errorHandler = function () {
+                        showThenHideMsg('Error deleting files', true);
+                    }
+                });
+            }
+		}
+		$('#table-block').height($('#list_paths').height());
     });
 
 
@@ -185,6 +221,7 @@ $(function () {
 					$.when(tbody
 						.html(data['content']))
 						.done(function () {
+                            checkForUpdateListPaths();
 							showThenHideMsg('The file "' + inputVal + '" was created successfully');
 						});
 				}
@@ -428,6 +465,22 @@ $(function () {
 
         $('#modalQuestion').detach();
 	});
+
+
+    /**
+     * HANDLER: scroll
+     */
+    $(window).scroll(function () {
+        var
+            isScrollUpExists = $('footer').is(':has(#scroll-up)');
+
+        if ($(this).scrollTop() < 700 && isScrollUpExists) {
+            $('#scroll-up').hide();
+        } else {
+            if (!isScrollUpExists) { generateScrollBlock(); }
+            $('#scroll-up').show();
+        }
+    });
 });
 
 
@@ -581,4 +634,43 @@ function hideActionsPanel() {
         $('#actions-panel, #allCheckboxes, #table_files input:checkbox').addClass('d-none');
         $('a[data-action="activate-checkbox"]').show();
 	}
+}
+
+
+function checkForUpdateListPaths() {
+    var
+        root = $('#list_paths p').text();
+    	currPath = root + $(location).attr('pathname').replace(relUrl, ''),
+        activeLinks = $('.nav_control-link.active'),
+
+        $.each(activeLinks, function (i, elem) {
+            if ($(this).attr(root + 'data-path') === currPath) {
+                var
+                    parendBlock = elem.closest('.list-group-child'),
+					oldChildList = parendBlock.find('.list-group');
+
+                oldChildList.detach();
+                updateListPaths(currPath, parendBlock);
+            }
+        });
+}
+
+function updateListPaths(path, insertblock) {
+    $.post({
+        url: relUrl + 'Utils/GetListDirs.php',
+        dataType: 'json',
+        data: {
+            'path': path
+        },
+        success: function (data) {
+            if (data['result'] === 'error') {
+                showThenHideMsg(data['msg'], true);
+            } else {
+                insertblock.append(data['content']);
+            }
+        },
+        error: errorHandler = function () {
+            showThenHideMsg('Error deleting files', true);
+        }
+    });
 }

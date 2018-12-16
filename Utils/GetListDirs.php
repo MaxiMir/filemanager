@@ -31,8 +31,9 @@
 
         private function run()
         {
+            $this->data['result'] = 'success';
             $contentData = FileFunc::getPathsData($this->path);
-            $this->data['content'] = HtmlMarkup::generate('list_dirs.twig', ['contentData' => $contentData]);
+            $this->data['content'] = HtmlMarkup::generate('list_dirs.twig', ['contentData' => ['listDirsData' => $contentData]]);
         }
     }
 

@@ -36,11 +36,14 @@
 .list-group-item {
 	border: none;
 }
+.list-group-item .empty-dir {
+	padding-left: 14px;
+}
 
 
 /* Table Files */
 #table-block {
-	min-height: 100vh;
+	min-height: 100%;
 	background-color: #282c34;
 }
 #table_files {
@@ -171,7 +174,7 @@
 
 #table_files tbody tr:first-child td a {
 	text-decoration: none;
-	width: 200px;
+	width: 150px;
 	height: 70px;
 }
 
@@ -310,4 +313,28 @@
 }
 .bouncing-loader > div:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+@keyframes rotate {
+	0% {
+		transform: rotate(0deg);
+	}
+	50% {
+		transform: rotate(45deg);
+	}
+	100% {
+		transform: rotate(90deg);
+	}
+}
+
+@keyframes backRotate {
+	0% {
+		transform: rotate(90deg);
+	}
+	50% {
+		transform: rotate(45deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
 }

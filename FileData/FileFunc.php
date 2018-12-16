@@ -8,7 +8,7 @@
         {
             $relPath = str_replace(ROOT, '', $fpath);
             $relPath .= is_dir($fpath) ? "/" : "";
-            return preg_match('/.htaccess|index.php|style.css/', $relPath) ? "?url={$relPath}" : $relPath;          
+            return preg_match('/.htaccess|index.php|style.css|composer.json|composer.lock|README.md/', $relPath) ? "?url={$relPath}" : $relPath;
         }
 
         public static function getDirSize($fpath)
@@ -104,8 +104,9 @@
 
             return array_reduce($paths, function ($acc, $path) {
                 $fName = basename($path);
-                $relPath = str_replace(ROOT, "/".FM_FOLDER_NAME."/", $path) . "/";
-                $acc[$fName] = [$path, $relPath];
+                $relPath = str_replace(ROOT, "/".FM_FOLDER_NAME."/", $path);
+                $isEmptyDir = empty(glob("{$path}/*", GLOB_ONLYDIR)) ? '0' : '1';
+                $acc[$fName] = ["{$path}/", "{$relPath}/", $isEmptyDir];
                 return $acc;
             }, []);
         }
