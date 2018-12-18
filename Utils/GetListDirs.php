@@ -12,12 +12,15 @@
         use Json;
 
         private $path;
-
+        private $currDir;
+        
         public function __construct()
         {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->data['msg'] = 'Incorrect method of sending data';
             } else {
+            	$relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
+            	$this->currDir = ROOT . $relativePath;
                 $path = FileFunc::cleanData($_POST['path']);
 
                 if (!is_dir($path)) {
@@ -32,7 +35,7 @@
         private function run()
         {
             $this->data['result'] = 'success';
-            $contentData = FileFunc::getPathsData($this->path);
+            $contentData = FileFunc::getPathsData($this->path, $this->currDir);
             $this->data['content'] = HtmlMarkup::generate('list_dirs.twig', ['contentData' => ['listDirsData' => $contentData]]);
         }
     }

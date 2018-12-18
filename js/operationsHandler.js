@@ -39,51 +39,12 @@ $(function () {
     /**
      * HANDLER: sidebar disclosure
      */
+
 	$('#list_paths').on('click', '.nav_control-link', function () {
 		var
-			li = $(this).closest('.list-group-item'),
-			img = $(this).find('img[alt="show"]'),
-			path = $(this).attr('data-path'),
-            ul = li.find('.list-group');
+			path = $(this).attr('data-path');
 
-		if ($(this).hasClass('active')) {
-            $(this).removeClass('active');
-            ul.hide('fast', function () {
-                img.css({
-					'animation': 'backRotate 0.2s',
-					'animation-fill-mode': 'forwards'
-				});
-            });
-		} else {
-            $(this).addClass('active');
-            img.css({
-                'animation': 'rotate 0.2s',
-                'animation-fill-mode': 'forwards'
-            });
-
-            if (ul.length !== 0) {
-                ul.show('fast');
-            } else {
-                $.post({
-                    url: relUrl + 'Utils/GetListDirs.php',
-                    dataType: 'json',
-                    data: {
-                        'path': path
-                    },
-                    success: function (data) {
-                        if (data['result'] === 'error') {
-                            showThenHideMsg(data['msg'], true);
-                        } else {
-                            li.append(data['content']);
-                        }
-                    },
-                    error: errorHandler = function () {
-                        showThenHideMsg('Error deleting files', true);
-                    }
-                });
-            }
-		}
-		$('#table-block').height($('#list_paths').height());
+        generateChildList(path);
     });
 
 
@@ -92,7 +53,7 @@ $(function () {
      */
     $('#checkboxControl').on('click', 'a[data-action="activate-checkbox"]', function () {
     	$(this).hide();
-        $('#table_files input:checkbox, #allCheckboxes').removeClass('d-none');
+        $('#table_files input:checkbox, #allCheckboxes, a[data-action="rename"]').removeClass('d-none');
         $('#actions-panel').removeClass('d-none');
 	});
 
@@ -104,22 +65,8 @@ $(function () {
         }
     });
 
-    $('#table_files').on('click', 'input:checkbox', function () {
-        var
-            count = $(':checkbox:checked').length,
-            actionsLinks = $('#actions-panel td a');
-
-        actionsLinks.each(function (i, elem) {
-            if (count === 0) {
-                $(this).addClass('disabled');
-            } else {
-                $(this).removeClass('disabled');
-            }
-        });
-    });
-
-    $('#table_files').on('click', '.file_field td:not(:first-of-type)', function (e) {
-    	if (!$('#actions-panel').hasClass('d-none')) {
+    $('#table_files').on('click', 'input:checkbox, .file_field td:not(:first-of-type)', function (e) {              
+    	if (!$('#actions-panel').hasClass('d-none') && $(this).is('td')) {
     		var
 				input = $(this)
 					.closest('tr')
@@ -129,13 +76,33 @@ $(function () {
     		e.preventDefault();
             input.prop('checked', !checked);
 		}
+    	
+        var
+    		countCheckbox = $('tbody :checkbox').length,
+        	countCheckedCheckbox = $('tbody :checkbox:checked').length,
+        	operationLinks = $('#actions-panel td a');
+  
+        if (countCheckbox !== countCheckedCheckbox) {
+        	$('#allCheckboxes').prop('checked', false);
+        } else {
+        	$('#allCheckboxes').prop('checked', true);
+        }
+        
+        operationLinks.each(function (i, elem) {
+            if (countCheckedCheckbox === 0) {
+                $(this).addClass('disabled');
+            } else {
+                $(this).removeClass('disabled');
+            }
+        });
     });
 
-
+    
     /**
      * HANDLER: close operations panel
      */
 	$('#table_files').on('click', '#closePanel', function () {
+        $('input:checkbox').prop('checked', false);
         hideActionsPanel();
     });
 
@@ -217,11 +184,12 @@ $(function () {
 				if (data['result'] === 'error') {
 					errorField.html(data['msg']);
 				} else {
+                    updateChildList();
 					btnCls.trigger('click');
 					$.when(tbody
 						.html(data['content']))
 						.done(function () {
-                            checkForUpdateListPaths();
+                            updateChildList();
 							showThenHideMsg('The file "' + inputVal + '" was created successfully');
 						});
 				}
@@ -262,7 +230,7 @@ $(function () {
             $.post({
                 url: relUrl + 'Utils/UploadsFiles.php',
                 xhr: function () {
-                    let
+                    var
                         myXhr = $.ajaxSettings.xhr();
 
                     if (myXhr.upload) {
@@ -289,6 +257,7 @@ $(function () {
                         $.when(tbody
 							.html(data['content']))
                             .done(function () {
+                                updateChildList();
                                 showThenHideMsg('Files successfully uploaded');
                             });
                     }
@@ -398,6 +367,7 @@ $(function () {
 							$.when(tbody
 								.html(data['content']))
 								.done(function () {
+                                    updateChildList();
 									showThenHideMsg('File successfully renamed');
 								});
 						}
@@ -414,10 +384,6 @@ $(function () {
 	/**
 	 * HANDLER: copy files
 	 */
-
-
-
-
 
 
 	/**
@@ -453,6 +419,7 @@ $(function () {
                         $.when(tbody
                             .html(data['content']))
                             .done(function () {
+                                updateChildList();
                                 showThenHideMsg('Files successfully deleted');
                             });
                     }
@@ -481,8 +448,95 @@ $(function () {
             $('#scroll-up').show();
         }
     });
+
+
+    /**
+     * HANDLER: opening a new page
+     */
+    $('.main_content').on('click', function() {
+        if (window.sessionStorage && window.localStorage) {
+            var
+                activeListLinkPaths = [];
+
+            $.each($('.nav_control-link.active'), function () {
+                activeListLinkPaths.push($(this).attr('data-path'));
+            });
+
+            localStorage.activeListLinkPaths = JSON.stringify(activeListLinkPaths);
+        }
+    });
+
+
+    /**
+     * Function: opening lists from previous page
+     */
+    generateListsFromPrevPage();
+
 });
 
+
+function generateListsFromPrevPage() {
+    if (window.sessionStorage && window.localStorage) {
+        var
+            activeListLinkPaths = localStorage.activeListLinkPaths ? JSON.parse(localStorage.activeListLinkPaths) : [];
+
+        if (activeListLinkPaths.length > 0) {
+            $.each(activeListLinkPaths, function (ind, path) {
+            	generateChildList(path);
+            });
+        }
+    }
+}
+
+function generateChildList(path) {
+    var
+        li = $('a[data-path="' + path + '"]').closest('li.list-group-item'),
+		link = li.find('a.nav_control-link'),
+        img = li.find('img[alt="show"]'),
+        ulNested = li.find('ul.list-group');
+
+    if (link.hasClass('active')) {
+        link.removeClass('active');
+        ulNested.hide('fast', function () {
+            img.css({
+                'animation': 'backRotate 0.01s',
+                'animation-fill-mode': 'forwards'
+            });
+        });
+    } else {
+        link.addClass('active');
+        img.css({
+            'animation': 'rotate 0.01s',
+            'animation-fill-mode': 'forwards'
+        });
+
+        if (ulNested.length !== 0) {
+            ulNested.show('fast');
+        } else {
+            $.post({
+                url: relUrl + 'Utils/GetListDirs.php',
+                async: false,
+                dataType: 'json',
+                data: {
+                    'path': path
+                },
+                success: function (data) {
+                    if (data['result'] === 'error') {
+                        showThenHideMsg(data['msg'], true);
+                    } else {
+                        if (ulNested.length !== 0) {
+                            ulNested.closest('.list-group').remove();
+                        }
+                        li.append(data['content']);
+                    }
+                },
+                error: errorHandler = function () {
+                    showThenHideMsg('Error deleting files', true);
+                }
+            });
+        }
+    }
+}
 
 function isValidName(name) {
 	if ($.trim(name) === '') {
@@ -631,46 +685,20 @@ function getCheckedFNames() {
 
 function hideActionsPanel() {
 	if (!$('#actions-panel').hasClass('d-none')) {
-        $('#actions-panel, #allCheckboxes, #table_files input:checkbox').addClass('d-none');
+        $('#actions-panel, #allCheckboxes, #table_files input:checkbox, a[data-action="rename"]').addClass('d-none');
         $('a[data-action="activate-checkbox"]').show();
 	}
 }
 
-
-function checkForUpdateListPaths() {
+function updateChildList() {
     var
-        root = $('#list_paths p').text();
+        root = $('#list_paths p').text(),
     	currPath = root + $(location).attr('pathname').replace(relUrl, ''),
-        activeLinks = $('.nav_control-link.active'),
+        updateActiveLink = $('#list_paths [data-path="' + currPath + '"]');
 
-        $.each(activeLinks, function (i, elem) {
-            if ($(this).attr(root + 'data-path') === currPath) {
-                var
-                    parendBlock = elem.closest('.list-group-child'),
-					oldChildList = parendBlock.find('.list-group');
+	if (updateActiveLink.hasClass('active')) {
+		updateActiveLink.trigger('click');
+	} else {
 
-                oldChildList.detach();
-                updateListPaths(currPath, parendBlock);
-            }
-        });
-}
-
-function updateListPaths(path, insertblock) {
-    $.post({
-        url: relUrl + 'Utils/GetListDirs.php',
-        dataType: 'json',
-        data: {
-            'path': path
-        },
-        success: function (data) {
-            if (data['result'] === 'error') {
-                showThenHideMsg(data['msg'], true);
-            } else {
-                insertblock.append(data['content']);
-            }
-        },
-        error: errorHandler = function () {
-            showThenHideMsg('Error deleting files', true);
-        }
-    });
+	}
 }

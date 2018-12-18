@@ -13,7 +13,7 @@
             'displayErrorDetails' => true,
         ]
     ];
-
+    
     $app = new App($configuration);
 
     $app->get('/[{url:.*}]', function (Request $request, Response $response, $args) {
@@ -48,12 +48,10 @@
 
 
     /* TODO:
+        * Synchronous XMLHttpRequest - замена решения
         * авторизация
-        * data storage хранение предпочтений
-        * файлы в корне
         * ООП в utils
-        * увеличение шрифтов в редакторе
-        * index.php и .htaccess в корне
+        * увеличение шрифтов в редакторе, просмотр страниц, сохранение для пользователя
         * картинки без перехода на страницу + превью.
         * верстка
 

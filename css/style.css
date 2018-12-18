@@ -3,7 +3,8 @@
 .block-list_paths {
     width: 285px;
 	z-index: 100;
-	min-height: 100%;
+	min-height: 95vh;
+	height: 100%;
     background-color: #21252b;
 }
 
@@ -96,6 +97,11 @@
 	-ms-transform: scale(1.1);
 	transform: scale(1.1);
 } 
+
+#table_files thead th a {
+    color: #fff;
+    font-weight: bold;
+}
     
 #table_files thead th:first-child,
 #table_files tbody td:first-child{
@@ -196,7 +202,7 @@
 #table_files input[type=checkbox] {
 	 width: 1.04rem;
 	 height: 1.04rem;
- }
+}
 
 #actions-panel {
 	padding: 10px;

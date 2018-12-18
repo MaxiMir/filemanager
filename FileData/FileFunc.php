@@ -97,7 +97,7 @@
             rmdir($fPath);
         }
 
-        public static function getPathsData($path = ROOT)
+        public static function getPathsData($path = ROOT, $currDir = null)
         {
             $pathInfo = new PathInfo($path);
             $paths = $pathInfo->getFilesPaths(true);
@@ -106,7 +106,13 @@
                 $fName = basename($path);
                 $relPath = str_replace(ROOT, "/".FM_FOLDER_NAME."/", $path);
                 $isEmptyDir = empty(glob("{$path}/*", GLOB_ONLYDIR)) ? '0' : '1';
-                $acc[$fName] = ["{$path}/", "{$relPath}/", $isEmptyDir];
+                $isCurrDir = (is_null($currDir) || $path != $currDir) ? '0' : '1';
+                $acc[$fName] = [
+                		"path" => "{$path}/",
+                		"relPath" => "{$relPath}/",
+                		"isEmptyDir" => $isEmptyDir,
+                		"isCurrDir" => $isCurrDir
+                ];
                 return $acc;
             }, []);
         }
