@@ -1,12 +1,10 @@
 $(function () {
-		msg = $('.main-message'),
-		leftNavSize = 285,
-    	tbody = $('#table_files tbody'),
-		relUrl = $('main').attr('data-relurl');
-
+    leftNavSize = 285;
+    tbody = $('#table_files tbody');
+    relUrl = $('main').attr('data-relurl');
 
     /**
-     * HANDLER: change size block
+     * HANDLER: change size left menu
      */
     $('.block-list_paths').resizable({
         handles: 'e',
@@ -21,9 +19,8 @@ $(function () {
             });
         },
         resize: function ( event, ui ) {
-        	var
-                width = $('.main_content').width() - ui.size.width - 30, // 30 - left, right padding
-                left = ui.size.width - leftNavSize;
+        	const width = $('.main_content').width() - ui.size.width - 30; // 30 - left, right padding
+            const left = ui.size.width - leftNavSize;
 
             $('#table_files').css({
 				'left': left + 'px',
@@ -37,64 +34,58 @@ $(function () {
 
 
     /**
-     * HANDLER: sidebar disclosure
+     * HANDLER: open folders in left menu
      */
-
 	$('#list_paths').on('click', '.nav_control-link', function () {
-		var
-			path = $(this).attr('data-path');
-
+        const path = $(this).attr('data-path');
         generateChildList(path);
     });
 
 
 	/**
-     * HANDLER: checkbox in table
+     * HANDLER: redactor
      */
-    $('#checkboxControl').on('click', 'a[data-action="activate-checkbox"]', function () {
-    	$(this).hide();
-        $('#table_files input:checkbox, #allCheckboxes, a[data-action="rename"]').removeClass('d-none');
-        $('#actions-panel').removeClass('d-none');
+    $('#activateRedactor').on('click', function () {
+        activateRedactor();
 	});
 
-    $('#table_files').on('click', '#allCheckboxes', function () {
+    $('#ControlCheckbox').on('click', function () {
         if ($(this).is(':checked')) {
-            $('#table_files input:checkbox').prop('checked', true);
+            $('#table_files tbody input:checkbox').prop('checked', true);
         } else {
-            $('#table_files input:checkbox').prop('checked', false);
+            $('#table_files tbody input:checkbox').prop('checked', false);
         }
     });
 
-    $('#table_files').on('click', 'input:checkbox, .file_field td:not(:first-of-type)', function (e) {              
-    	if (!$('#actions-panel').hasClass('d-none') && $(this).is('td')) {
-    		var
-				input = $(this)
-					.closest('tr')
-					.find('input'),
-    			checked = input.prop('checked');
+    $('#table_files').on('click', 'input:checkbox, .selectable', function (e) {
+        const isHiddenActionPanel = $('#actions-panel').hasClass('d-none');
 
-    		e.preventDefault();
-            input.prop('checked', !checked);
+    	if (!isHiddenActionPanel) {
+        	const operationLinks = $('#actions-panel th a');
+        	const input = $(this)
+    			.closest('tr')
+    			.find('input');
+    		const checked = input.prop('checked');
+
+    		if ($(this).attr('type') !== 'checkbox') {
+    			e.preventDefault();
+    			input.prop('checked', !checked);
+    		}
+    		
+            const countCheckbox = $('tbody :checkbox').length;
+            const countCheckedCheckbox = $('tbody :checkbox:checked').length;
+            const valuePropChecked = (countCheckbox === countCheckedCheckbox);
+    		
+			$('#ControlCheckbox').prop('checked', valuePropChecked);
+
+            operationLinks.each(function () {
+                if (countCheckedCheckbox === 0) {
+                    $(this).addClass('disabled');
+                } else {
+                    $(this).removeClass('disabled');
+                }
+            });
 		}
-    	
-        var
-    		countCheckbox = $('tbody :checkbox').length,
-        	countCheckedCheckbox = $('tbody :checkbox:checked').length,
-        	operationLinks = $('#actions-panel td a');
-  
-        if (countCheckbox !== countCheckedCheckbox) {
-        	$('#allCheckboxes').prop('checked', false);
-        } else {
-        	$('#allCheckboxes').prop('checked', true);
-        }
-        
-        operationLinks.each(function (i, elem) {
-            if (countCheckedCheckbox === 0) {
-                $(this).addClass('disabled');
-            } else {
-                $(this).removeClass('disabled');
-            }
-        });
     });
 
     
@@ -102,8 +93,7 @@ $(function () {
      * HANDLER: close operations panel
      */
 	$('#table_files').on('click', '#closePanel', function () {
-        $('input:checkbox').prop('checked', false);
-        hideActionsPanel();
+        deactivateRedactor();
     });
 
 	
@@ -111,10 +101,9 @@ $(function () {
 	 * HANDLER: modals reset
 	 */
 	$('a[data-toggle="modal"]').on('click', function () {
-		var
-			idModal = $(this).attr('data-target'),
-			form = $('#' + $(idModal).find('form').attr('id')),
-            error_msg = form.find('.error_msg');
+		const idModal = $(this).attr('data-target');
+        const form = $('#' + $(idModal).find('form').attr('id'));
+        const error_msg = form.find('.error_msg');
 
         form[0].reset();
         error_msg.empty();
@@ -125,8 +114,7 @@ $(function () {
      * HANDLER: click outside the dynamic modal window
      */
     $(document).on('click', function (e) {
-        var
-            modal = $("#modalQuestion");
+        const modal = $("#modalQuestion");
 
         if ($('footer').is(':has(#modalQuestion)')) {
             if (!modal.is(e.target) && modal.has(e.target).length === 0) {
@@ -139,10 +127,9 @@ $(function () {
      * HANDLER: modals create files
      */
 	$('.create_files input[type=text]').on('blur', function () {
-		var
-			inputVal = $(this).val(),
-			errorField = $(this).next(),
-			btnSbm = $(this)
+		const inputVal = $(this).val();
+        const errorField = $(this).next();
+        const btnSbm = $(this)
 				.closest('form')
 				.find('button[type="submit"]');
 
@@ -158,14 +145,13 @@ $(function () {
 	});
 
 	$('.form-create_files').on('submit', function (e) {
-		var
-			currForm = $('#' + $(this).attr('id')),
-			errorField = currForm.find(".error_msg"),
-			input = currForm.find("input[type=text]"),
-			inputVal = input.val(),
-            btnSbm = currForm.find("button[type='submit']"),
-			btnCls = currForm.find("button[data-dismiss='modal']"),
-			type = input.attr('data-type');
+        const currForm = $('#' + $(this).attr('id'));
+        const errorField = currForm.find(".error_msg");
+        const input = currForm.find("input[type=text]");
+        const inputVal = input.val();
+        const btnSbm = currForm.find("button[type='submit']");
+        const btnCls = currForm.find("button[data-dismiss='modal']");
+        const type = input.attr('data-type');
 
 		e.preventDefault();
 
@@ -177,20 +163,21 @@ $(function () {
 				'type': type
 			},
 			beforeSend: function (data) {
+			    if (!$('#actions-panel').hasClass('d-none')) {
+                    deactivateRedactor();
+                }
                 btnSbm.attr('disabled', 'disabled');
-                hideActionsPanel();
 			},
 			success: function (data) {
 				if (data['result'] === 'error') {
 					errorField.html(data['msg']);
 				} else {
-                    updateChildList();
 					btnCls.trigger('click');
 					$.when(tbody
 						.html(data['content']))
 						.done(function () {
                             updateChildList();
-							showThenHideMsg('The file "' + inputVal + '" was created successfully');
+							showThenHideMsg(`${inputVal} successfully created`);
 						});
 				}
 			},
@@ -208,15 +195,14 @@ $(function () {
 	 * HANDLER: modal uploads files
 	 */
 	$('#formUploadsFiles').on('submit', function (e) {
-		var
-			form = $(this),
-			modalBody = form.find('.modal-body'),
-			progressBar = form.find('.progress'),
-			errorField = form.find(".error_msg"),
-            btnCls = form.find("button[data-dismiss='modal']"),
-			btnSbm = form.find("button[type='submit']"),
-			data = new FormData(),
-			files = $('#newFiles').get(0).files;
+		const form = $(this);
+        const modalBody = form.find('.modal-body');
+        const progressBar = form.find('.progress');
+        const errorField = form.find(".error_msg");
+        const btnCls = form.find("button[data-dismiss='modal']");
+        const btnSbm = form.find("button[type='submit']");
+        const data = new FormData();
+        const files = $('#newFiles').get(0).files;
 
         e.preventDefault();
 
@@ -230,8 +216,7 @@ $(function () {
             $.post({
                 url: relUrl + 'Utils/UploadsFiles.php',
                 xhr: function () {
-                    var
-                        myXhr = $.ajaxSettings.xhr();
+                    const myXhr = $.ajaxSettings.xhr();
 
                     if (myXhr.upload) {
                         myXhr.upload.addEventListener('progress', changeProgressBar, false);
@@ -243,11 +228,13 @@ $(function () {
                 contentType: false, // дефолтные установки jQuery равны application/x-www-form-urlencoded, что не предусматривает отправку файлов
                 processData: false, // jQuery будет конвертировать массив files в строку => сервер не сможет получить данные.
                 beforeSend: function () {
+                    if (!$('#actions-panel').hasClass('d-none')) {
+                        deactivateRedactor();
+                    }
                     modalBody.fadeOut('fast', function () {
                         btnSbm.attr('disabled', 'disabled');
                         progressBar.toggleClass('d-none d-block');
                     });
-					hideActionsPanel();
                 },
                 success: function (data) {
                     if (data['result'] === 'error') {
@@ -275,65 +262,69 @@ $(function () {
                 }
             });
 		}
-	});
+    }
+);
 
 
 	/**
 	 * HANDLER: rename files
 	 */
 	$('#table_files').on('click', '[data-action="rename"]', function (e) {
-		var
-			filePath = $(this).attr('data-path'),
-			fileName = $(this).attr('data-name'),
-			linkFile = $('.link_files[data-name="' + fileName + '"]'),
-			renameForm = $('<div>', {
-				class: 'input-group',
-				append: $('<input>', {
-						class: 'form-control',
-						type: 'text',
-						placeholder: 'Enter name',
-						value: '',
-						autofocus: 'autofocus',
-						'data-name': fileName
+        const fileName = $(this).attr('data-name');
+        const renameLinks = $('[data-action="rename"]');
+        const linkFile = $('.link_files[data-name="' + fileName + '"]');
+        const parentLinkFile = linkFile.closest('.link-file');
+        const renameForm = $('<div>', {
+			class: 'input-group',
+			append: $('<input>', {
+					class: 'form-control',
+					type: 'text',
+					placeholder: 'Enter name',
+					value: '',
+					autofocus: 'autofocus',
+					'data-name': fileName
+			})
+			.add($('<div>', {
+				class: 'input-group-append',
+				append: $('<button>', {
+						type: 'submit',
+						class: 'btn btn-outline-secondary btn-ok',
+						text: 'OK'
 					})
-					.add($('<div>', {
-						class: 'input-group-append',
-						append: $('<button>', {
-								type: 'submit',
-								class: 'btn btn-outline-secondary btn-ok',
-								text: 'OK'
-							})
-							.add($('<button>', {
-								type: 'button',
-								class: 'btn btn-outline-secondary btn-cancel',
-								text: 'CANCEL'
-							}))
+					.add($('<button>', {
+						type: 'button',
+						class: 'btn btn-outline-secondary btn-cancel',
+						text: 'CANCEL'
 					}))
-			});
+			}))
+		});
 
         e.preventDefault();
-		$('[data-action="rename"]').addClass('disabled');
+
+        renameLinks.addClass('disabled');
+        parentLinkFile.removeClass('selectable');
 
 		linkFile.fadeOut('fast', function () {
-			$(this).parent()
-			.append(renameForm)
-			.find('input')
-			.focus()
-			.val('')
-			.val(fileName)			
+			$(this)
+				.parent()
+				.append(renameForm)
+				.find('input')
+				.focus()
+				.val('')
+				.val(fileName)
 		});
 	});
 
 	$('#table_files').on('click', '.btn-ok, .btn-cancel', function () {
-		var
-			renameForm = $(this).closest('.input-group'),
-			input = renameForm.find('input[type="text"]'),
-			oldName = input.attr('data-name'),
-			newName = input.val(),
-			linkFile = renameForm.prev('.link_files'),
-			type = linkFile.attr('data-type'),
-			iconsRename = $('[data-action="rename"]'),
-			btnClose = $(this).next('.btn-cancel');
+		const renameForm = $(this).closest('.input-group');
+        const input = renameForm.find('input[type="text"]');
+        const oldName = input.attr('data-name');
+        const newName = input.val();
+        const linkFile = renameForm.prev('.link_files');
+        const parentLinkFile = linkFile.closest('.link-file');
+        const type = linkFile.attr('data-type');
+        const iconsRename = $('[data-action="rename"]');
+        const btnClose = $(this).next('.btn-cancel');
 
 		if ($(this).hasClass('btn-cancel')) {
 			renameForm.remove();
@@ -357,17 +348,15 @@ $(function () {
 						'newName': newName,
 						'type': type
 					},
-                    beforeSend: function (data) {
-                        hideActionsPanel();
-                    },
 					success: function (data) {
 						if (data['result'] == 'error') {
 							showThenHideMsg(data['msg'], true);
 						} else {
+							updateChildList();
 							$.when(tbody
 								.html(data['content']))
 								.done(function () {
-                                    updateChildList();
+                                    activateRedactor();
 									showThenHideMsg('File successfully renamed');
 								});
 						}
@@ -378,6 +367,7 @@ $(function () {
 				});
 			}
 		}
+        parentLinkFile.addClass('selectable');
 	});
 
 
@@ -395,9 +385,8 @@ $(function () {
 	});
 
 	$('body').on('click', '.files_delete #btnMesCancel, .files_delete #btnMesOk', function (e) {
-        var
-            idBtn = $(this).attr('id'),
-            checkedFName = getCheckedFNames();
+        const idBtn = $(this).attr('id');
+        const checkedFName = getCheckedFNames();
 
         e.preventDefault();
         $('#spanClose').trigger('click');
@@ -409,17 +398,15 @@ $(function () {
                 data: {
                     'checkedFName': checkedFName
                 },
-				beforeSend: function (data) {
-                    hideActionsPanel();
-				},
                 success: function (data) {
                     if (data['result'] === 'error') {
                         showThenHideMsg(data['msg'], true);
                     } else {
+                        updateChildList();
                         $.when(tbody
                             .html(data['content']))
                             .done(function () {
-                                updateChildList();
+                                refreshRedactor();
                                 showThenHideMsg('Files successfully deleted');
                             });
                     }
@@ -438,8 +425,7 @@ $(function () {
      * HANDLER: scroll
      */
     $(window).scroll(function () {
-        var
-            isScrollUpExists = $('footer').is(':has(#scroll-up)');
+        const isScrollUpExists = $('footer').is(':has(#scroll-up)');
 
         if ($(this).scrollTop() < 700 && isScrollUpExists) {
             $('#scroll-up').hide();
@@ -455,8 +441,7 @@ $(function () {
      */
     $('.main_content').on('click', function() {
         if (window.sessionStorage && window.localStorage) {
-            var
-                activeListLinkPaths = [];
+            const activeListLinkPaths = [];
 
             $.each($('.nav_control-link.active'), function () {
                 activeListLinkPaths.push($(this).attr('data-path'));
@@ -468,32 +453,78 @@ $(function () {
 
 
     /**
-     * Function: opening lists from previous page
+     * FUNCTION: opening tree folders from previous page
      */
-    generateListsFromPrevPage();
-
+    loadPrevPageTree();
 });
 
+function activateRedactor() {
+    setActivityControlCheckbox();
+    $('#activateRedactor').hide();
+    $('#actions-panel, input:checkbox, a[data-action="rename"]').removeClass('d-none');
+}
 
-function generateListsFromPrevPage() {
+function refreshRedactor() {
+    setActivityControlCheckbox();
+    $('#ControlCheckbox').prop('checked', false);
+    $('#actions-panel th a').addClass('disabled');
+}
+
+function deactivateRedactor() {
+	$('#actions-panel, #ControlCheckbox, #table_files input:checkbox, a[data-action="rename"]').addClass('d-none');
+    $('#table_files input:checkbox:checked').prop('checked', false);
+	$('#activateRedactor').show();
+}
+
+function setActivityControlCheckbox() {
+    const valAttrDisabledMainCheckbox = $('#no_files').length === 1;
+
+    $('#ControlCheckbox').prop('disabled', valAttrDisabledMainCheckbox);
+}
+
+function loadPrevPageTree() {
     if (window.sessionStorage && window.localStorage) {
-        var
-            activeListLinkPaths = localStorage.activeListLinkPaths ? JSON.parse(localStorage.activeListLinkPaths) : [];
+        const activeListLinkPaths = localStorage.activeListLinkPaths ? JSON.parse(localStorage.activeListLinkPaths) : [];
 
         if (activeListLinkPaths.length > 0) {
-            $.each(activeListLinkPaths, function (ind, path) {
-            	generateChildList(path);
+            $.post({
+                url: relUrl + 'Utils/GetListDirs.php',
+                async: true,
+                dataType: 'json',
+                data: {
+                    'paths': activeListLinkPaths
+                },
+                success: function (data) {
+                    if (data['result'] === 'error') {
+                        showThenHideMsg(data['msg'], true);
+                    } else {
+                        $.each(data['content'], function (path, html) {
+                            const li = $('a[data-path="' + path + '"]').closest('li.list-group-item');
+                            const link = li.find('a.nav_control-link');
+                            const img = li.find('img[alt="show"]');
+
+                            link.addClass('active');
+                            img.css({
+                                'animation': 'rotate 0.01s',
+                                'animation-fill-mode': 'forwards'
+                            });
+                            li.append(html);
+                        });
+                    }
+                },
+                error: errorHandler = function () {
+                    showThenHideMsg('An error occurred while generating the directory tree', true);
+                }
             });
         }
     }
 }
 
 function generateChildList(path) {
-    var
-        li = $('a[data-path="' + path + '"]').closest('li.list-group-item'),
-		link = li.find('a.nav_control-link'),
-        img = li.find('img[alt="show"]'),
-        ulNested = li.find('ul.list-group');
+	const li = $('a[data-path="' + path + '"]').closest('li.list-group-item');
+    const link = li.find('a.nav_control-link');
+    const img = li.find('img[alt="show"]');
+    const ulNested = li.find('ul.list-group');
 
     if (link.hasClass('active')) {
         link.removeClass('active');
@@ -515,10 +546,10 @@ function generateChildList(path) {
         } else {
             $.post({
                 url: relUrl + 'Utils/GetListDirs.php',
-                async: false,
+                async: true,
                 dataType: 'json',
                 data: {
-                    'path': path
+                    'paths': [path]
                 },
                 success: function (data) {
                     if (data['result'] === 'error') {
@@ -527,11 +558,11 @@ function generateChildList(path) {
                         if (ulNested.length !== 0) {
                             ulNested.closest('.list-group').remove();
                         }
-                        li.append(data['content']);
+                        li.append(data['content'][path]);
                     }
                 },
                 error: errorHandler = function () {
-                    showThenHideMsg('Error deleting files', true);
+                    showThenHideMsg('An error occurred while generating the directory tree', true);
                 }
             });
         }
@@ -547,8 +578,7 @@ function isValidName(name) {
 
 function changeProgressBar(e) {
 	if (e.lengthComputable) {
-		var
-			progress = Math.ceil(e.loaded / e.total * 100);
+		const progress = Math.ceil(e.loaded / e.total * 100);
 
 		$('.progress-bar')
 			.text(progress + '%')
@@ -558,15 +588,15 @@ function changeProgressBar(e) {
 }
 
 function showThenHideMsg(msg, error = null) {
-	$('.main-message').attr('class', function () {
-		return error ? 'main-message text-danger' : 'main-message text-success';
-	});
-
+    const showTime = error ? 2000 : 1000;
 	$('.main-message')
-		.html(msg)
-		.show()
-		.delay(1500)
-		.hide(500);
+        .html(msg)
+        .attr('class', function () {
+		    return error ? 'main-message text-danger' : 'main-message text-success';
+	    })
+	    .fadeIn()
+        .delay(showTime)
+        .fadeOut(100);
 }
 
 function generateScrollBlock() {
@@ -576,7 +606,7 @@ function generateScrollBlock() {
                 width: 35,
                 height: 35,
 				position: 'fixed',
-                right: '3%',
+                right: '1%',
                 bottom: '2%',
                 opacity: 0.6,
                 cursor: 'pointer'
@@ -610,84 +640,75 @@ function generateScrollBlock() {
 }
 
 function generateModalWindow(aClass, msg, header, data = null) {
-	var
-		modalQuestion = $('<div>', {
-			class: 'modal fade' + ' ' + aClass,
-			id: 'modalQuestion',
-			tabindex: '-1',
-			role: 'dialog',
-			'aria-labelledby': 'modalQuestionTitle',
-			'aria-hidden': 'true',
+	$('<div>', {
+		class: 'modal fade' + ' ' + aClass,
+		id: 'modalQuestion',
+		tabindex: '-1',
+		role: 'dialog',
+		'aria-labelledby': 'modalQuestionTitle',
+		'aria-hidden': 'true',
+		append: $('<div>', {
+			class: 'modal-dialog modal-dialog-centered',
+			role: 'document',
 			append: $('<div>', {
-				class: 'modal-dialog modal-dialog-centered',
-				role: 'document',
-				append: $('<div>', {
-					class: 'modal-content'
-				})
+				class: 'modal-content'
 			})
-		}).appendTo('footer'),
+		})
+	}).appendTo('footer'),
 
-		modalQuestionHeader = $('<div>', {
-			class: 'modal-header bg-warning',
-			append: $('<h5>', {
-					class: 'modal-title',
-					text: header
-				})
-				.add($('<button>', {
-					class: 'close',
-					type: 'button',
-					'data-dismiss': 'modal',
-					'aria-label': 'Close',
-					append: $('<span>', {
-						id: 'spanClose',
-						'aria-hidden': 'true',
-						html: '&times;'
-					})
-				}))
-		}).appendTo('#modalQuestion .modal-content'),
-
-		modalQuestionBody = $('<div>', {
-			class: 'modal-body',
-			append: $('<p>', {
-				class: 'question-text',
-				text: msg
+	$('<div>', {
+		class: 'modal-header bg-warning',
+		append: $('<h5>', {
+				class: 'modal-title',
+				text: header
+		})
+		.add($('<button>', {
+			class: 'close',
+			type: 'button',
+			'data-dismiss': 'modal',
+			'aria-label': 'Close',
+			append: $('<span>', {
+				id: 'spanClose',
+				'aria-hidden': 'true',
+				html: '&times;'
 			})
-		}).appendTo('#modalQuestion .modal-content'),
+		}))
+	}).appendTo('#modalQuestion .modal-content'),
 
-		modalQuestionFooter = $('<div>', {
-			class: 'modal-footer',
-			append: $('<button>', {
-					type: 'button',
-					id: 'btnMesCancel',
-					class: 'btn btn-secondary',
-					'data-dismiss': 'modal',
-					text: 'CANCEL'
-				})
-				.add($('<button>', {
-					type: 'button',
-					id: 'btnMesOk',
-					class: 'btn btn-primary',
-					text: 'OK'
-				}))
-		}).appendTo('#modalQuestion .modal-content');
+	$('<div>', {
+		class: 'modal-body',
+		append: $('<p>', {
+			class: 'question-text',
+			text: msg
+		})
+	}).appendTo('#modalQuestion .modal-content'),
+
+	$('<div>', {
+		class: 'modal-footer',
+		append: $('<button>', {
+				type: 'button',
+				id: 'btnMesCancel',
+				class: 'btn btn-secondary',
+				'data-dismiss': 'modal',
+				text: 'CANCEL'
+		})
+		.add($('<button>', {
+			type: 'button',
+			id: 'btnMesOk',
+			class: 'btn btn-primary',
+			text: 'OK'
+		}))
+	}).appendTo('#modalQuestion .modal-content');
 }
 
 function getCheckedFNames() {
-    var
-        pathFiles = [];
+    const pathFiles = [];
 
-    $('input:checkbox:checked').not("#allCheckboxes").each(function () {
+    $.each($('input:checkbox:checked').not("#ControlCheckbox"), function () {
         pathFiles.push($(this).val());
     });
 
     return pathFiles;
-}
-
-function hideActionsPanel() {
-	if (!$('#actions-panel').hasClass('d-none')) {
-        $('#actions-panel, #allCheckboxes, #table_files input:checkbox, a[data-action="rename"]').addClass('d-none');
-        $('a[data-action="activate-checkbox"]').show();
-	}
 }
 
 function updateChildList() {

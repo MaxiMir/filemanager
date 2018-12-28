@@ -1,15 +1,15 @@
-<ul class="list-group {% if data['isCurrDir'] == '0' %}curr-dir{% endif %}">
+<ul class="list-group">
     {% for name, data in contentData['listDirsData'] %}
 
-        <li class="list-group-item list-group-item-dark" >
+        <li class="list-group-item list-group-item-dark{% if data['isCurrDir'] == 'Y' %} curr-dir{% endif %}">
 
-            {% if data['isEmptyDir'] == '1' %}
+            {% if data['isEmptyDir'] == 'N' %}
                 <a href="javascript:void(0);" data-path="{{ data['path'] }}" class="nav_control-link">
                     <img src="{{ FM_REL_PATH }}css/img/control/down-arrow.png" width="10px" alt="show">
                 </a>
             {% endif %}
 
-            <a href="{{ data['relPath'] }}" class="list_path-link navigation-link {% if data['isEmptyDir'] == '0' %}empty-dir{% endif %}">
+            <a href="{{ data['relPath'] }}" class="list_path-link navigation-link{% if data['isEmptyDir'] == 'Y' %} empty-dir{% endif %}">
                 <img src="{{ FM_REL_PATH }}css/img/control/folder-icon.png" width="15px" alt="icon">
                 <span class="font-weight-bold">{{ name }}</span>
             </a>

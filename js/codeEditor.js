@@ -1,13 +1,12 @@
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip();
 
-	let
-		editor = ace.edit('editor'),
-		mode = setEditorMode(),
-	    source = editor.getValue(),
-	    relUrl = $('main').attr('data-relurl');
+	const editor = ace.edit('editor');
+    const mode = setEditorMode();
+    const relUrl = $('main').attr('data-relurl');
+    let source = editor.getValue();
     
-	editor.session.setMode('ace/mode/' + mode)
+	editor.session.setMode('ace/mode/' + mode);
 	editor.setOptions({
 		minLines: 15,
 		autoScrollEditorIntoView: true,
@@ -32,9 +31,8 @@ $(function () {
 	});
 
 	$('#btnSave').on('click', function () {
-		let
-			code = editor.getValue(),
-			msg = $('.main-message');
+        const code = editor.getValue();
+        const msg = $('.main-message');
 
 		$.post({
 			url: relUrl + 'Utils/ChangeContent.php',
@@ -45,13 +43,13 @@ $(function () {
 				$('#btnSave, #btnRemove').attr('disabled', 'disabled');
 			},
 			success: function (data) {
-                let
-					text = data['result'] === 'success' ? 'File has been successfully modified' : data['msg'];
+                const text = data['result'] === 'success' ? 'File has been successfully modified' : data['msg'];
 				if (data['result'] === 'success') {
 					source = code;
 				}
 
-				msg.html(text)
+				msg
+					.html(text)
 					.show()
 					.delay(1500)
 					.hide(300);
@@ -73,9 +71,8 @@ $(function () {
 
 function setEditorMode() {
 
-	let
-		ext = $('#editor').attr('data-ext'),
-		modes = {
+	const ext = $('#editor').attr('data-ext');
+    const modes = {
 			'php': 'php',
 			'js': 'javascript',
 			'py': 'python',

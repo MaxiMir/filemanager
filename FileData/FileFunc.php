@@ -79,6 +79,12 @@
 
         public static function cleanData($data)
         {
+            if (is_array($data)) {
+                return array_map(function ($item) {
+                    return htmlspecialchars(trim($item));
+                }, $data);
+            }
+
             return htmlspecialchars(trim($data));
         }
 
@@ -102,11 +108,11 @@
             $pathInfo = new PathInfo($path);
             $paths = $pathInfo->getFilesPaths(true);
 
-            return array_reduce($paths, function ($acc, $path) {
+            return array_reduce($paths, function ($acc, $path) use ($currDir) {
                 $fName = basename($path);
                 $relPath = str_replace(ROOT, "/".FM_FOLDER_NAME."/", $path);
-                $isEmptyDir = empty(glob("{$path}/*", GLOB_ONLYDIR)) ? '0' : '1';
-                $isCurrDir = (is_null($currDir) || $path != $currDir) ? '0' : '1';
+                $isEmptyDir = empty(glob("{$path}/*", GLOB_ONLYDIR)) ? 'Y' : 'N';
+                $isCurrDir = (!is_null($currDir) || $path === $currDir) ? 'Y' : 'N';
                 $acc[$fName] = [
                 		"path" => "{$path}/",
                 		"relPath" => "{$relPath}/",
