@@ -1,10 +1,15 @@
+.modal-open {
+	padding-right: 0!important;
+	overflow: visible!important;
+}
+
 .main-message {
 	position: fixed;
-	width: 800px;
+	width: 600px;
 	height: 150px;
 	top: 50%;
 	left: 50%;
-	margin-left: -400px;
+	margin-left: -300px;
 	z-index: 1000;
 	border: 1px solid #0094e5;
 	background-color: #313336;

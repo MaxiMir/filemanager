@@ -49,7 +49,7 @@ $(function () {
         activateRedactor();
 	});
 
-    $('#ControlCheckbox').on('click', function () {
+    $('#controlCheckbox').on('click', function () {
         if ($(this).is(':checked')) {
             $('#table_files tbody input:checkbox').prop('checked', true);
         } else {
@@ -76,9 +76,9 @@ $(function () {
             const countCheckedCheckbox = $('tbody :checkbox:checked').length;
             const valuePropChecked = (countCheckbox === countCheckedCheckbox);
     		
-			$('#ControlCheckbox').prop('checked', valuePropChecked);
+			$('#controlCheckbox').prop('checked', valuePropChecked);
 
-            operationLinks.each(function () {
+            $.each(operationLinks, function () {
                 if (countCheckedCheckbox === 0) {
                     $(this).addClass('disabled');
                 } else {
@@ -176,7 +176,7 @@ $(function () {
 					$.when(tbody
 						.html(data['content']))
 						.done(function () {
-                            updateChildList();
+                            updateChildLists();
 							showThenHideMsg(`${inputVal} successfully created`);
 						});
 				}
@@ -244,7 +244,7 @@ $(function () {
                         $.when(tbody
 							.html(data['content']))
                             .done(function () {
-                                updateChildList();
+                                updateChildLists();
                                 showThenHideMsg('Files successfully uploaded');
                             });
                     }
@@ -352,7 +352,7 @@ $(function () {
 						if (data['result'] == 'error') {
 							showThenHideMsg(data['msg'], true);
 						} else {
-							updateChildList();
+							updateChildLists();
 							$.when(tbody
 								.html(data['content']))
 								.done(function () {
@@ -402,7 +402,7 @@ $(function () {
                     if (data['result'] === 'error') {
                         showThenHideMsg(data['msg'], true);
                     } else {
-                        updateChildList();
+                        updateChildLists();
                         $.when(tbody
                             .html(data['content']))
                             .done(function () {
@@ -441,7 +441,7 @@ $(function () {
      */
     $('.main_content').on('click', function() {
         if (window.sessionStorage && window.localStorage) {
-            const activeListLinkPaths = [];
+            let activeListLinkPaths = [];
 
             $.each($('.nav_control-link.active'), function () {
                 activeListLinkPaths.push($(this).attr('data-path'));
@@ -459,27 +459,28 @@ $(function () {
 });
 
 function activateRedactor() {
-    setActivityControlCheckbox();
+    setActivitycontrolCheckbox();
     $('#activateRedactor').hide();
     $('#actions-panel, input:checkbox, a[data-action="rename"]').removeClass('d-none');
 }
 
 function refreshRedactor() {
-    setActivityControlCheckbox();
-    $('#ControlCheckbox').prop('checked', false);
+    setActivitycontrolCheckbox();
+    $('#controlCheckbox').prop('checked', false);
     $('#actions-panel th a').addClass('disabled');
+    $('input:checkbox, a[data-action="rename"]').removeClass('d-none');
 }
 
 function deactivateRedactor() {
-	$('#actions-panel, #ControlCheckbox, #table_files input:checkbox, a[data-action="rename"]').addClass('d-none');
+	$('#actions-panel, #controlCheckbox, #table_files input:checkbox, a[data-action="rename"]').addClass('d-none');
     $('#table_files input:checkbox:checked').prop('checked', false);
 	$('#activateRedactor').show();
 }
 
-function setActivityControlCheckbox() {
+function setActivitycontrolCheckbox() {
     const valAttrDisabledMainCheckbox = $('#no_files').length === 1;
 
-    $('#ControlCheckbox').prop('disabled', valAttrDisabledMainCheckbox);
+    $('#controlCheckbox').prop('disabled', valAttrDisabledMainCheckbox);
 }
 
 function loadPrevPageTree() {
@@ -489,7 +490,6 @@ function loadPrevPageTree() {
         if (activeListLinkPaths.length > 0) {
             $.post({
                 url: relUrl + 'Utils/GetListDirs.php',
-                async: true,
                 dataType: 'json',
                 data: {
                     'paths': activeListLinkPaths
@@ -546,7 +546,6 @@ function generateChildList(path) {
         } else {
             $.post({
                 url: relUrl + 'Utils/GetListDirs.php',
-                async: true,
                 dataType: 'json',
                 data: {
                     'paths': [path]
@@ -589,12 +588,13 @@ function changeProgressBar(e) {
 
 function showThenHideMsg(msg, error = null) {
     const showTime = error ? 2000 : 1000;
+
 	$('.main-message')
         .html(msg)
         .attr('class', function () {
 		    return error ? 'main-message text-danger' : 'main-message text-success';
 	    })
-	    .fadeIn()
+	    .show()
         .delay(showTime)
         .fadeOut(100);
 }
@@ -702,24 +702,49 @@ function generateModalWindow(aClass, msg, header, data = null) {
 }
 
 function getCheckedFNames() {
-    const pathFiles = [];
+    let pathFiles = [];
 
-    $.each($('input:checkbox:checked').not("#ControlCheckbox"), function () {
+    $.each($('input:checkbox:checked').not("#controlCheckbox"), function () {
         pathFiles.push($(this).val());
     });
 
     return pathFiles;
 }
 
-function updateChildList() {
-    var
-        root = $('#list_paths p').text(),
-    	currPath = root + $(location).attr('pathname').replace(relUrl, ''),
-        updateActiveLink = $('#list_paths [data-path="' + currPath + '"]');
 
-	if (updateActiveLink.hasClass('active')) {
-		updateActiveLink.trigger('click');
-	} else {
+function getListsForUpdate(paths = []) {
+    let listForUpdate = [];
+    const root = $('#root').text();
+    const urn = $(location).attr('pathname');
+    paths.push = root + urn.replace(relUrl, '');
+    $.each(paths, function (i, val) {
+        listForUpdate[val] = $('#list_paths [data-path="' + val + '"]').hasClass('active');
+    });
+    return listForUpdate;
+}
 
-	}
+function updateChildLists(data) {
+    // $.each(data, function () {
+    // if (!hasChildDirs && isIssetControlArrow) {
+    //     controlArrow.detach();
+    //     if (isActiveControlArrow) {
+    //         parentUl.find('ul.list-group').detach();
+    //     }
+    // } else {
+    //     if (!isIssetControlArrow) {
+    //         $('<a>', {
+    //             href: 'javascript:void(0);',
+    //             class: 'nav_control-link',
+    //             'data-path': currPath,
+    //             append: $('<img>', {
+    //                 src: '/fm/css/img/control/down-arrow.png',
+    //                 width: '10px',
+    //                 alt: 'show'
+    //             })
+    //         }).prependTo(parentUl);
+    //     } else if (isActiveControlArrow) {
+    //         parentUl.find('ul.list-group').detach();
+    //
+    //     }
+    // }
 }

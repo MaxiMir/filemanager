@@ -4,7 +4,7 @@
         <div class="row">  
                 <div class="col-12 text-center">
                     <h1 class="page-header">{{ header }}</h1>
-                    <div class="main-message text-success" style="display: none;">Text Error</div>
+                    <div class="main-message text-success" style="display: none;"></div>
                     {% if breadcrumbs %}
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
@@ -20,7 +20,7 @@
             <div class="row main_content">
                 <div class="col-3">
                     <div class="block-list_paths" id="list_paths">
-                        <a href="{{ FM_REL_PATH }}" class="list-group-item list_paths-header list-group-item-dark text-white text-center font-weight-bold">{{ ROOT }}</a>
+                        <a href="{{ FM_REL_PATH }}" id="root" class="list-group-item list_paths-header list-group-item-dark text-white text-center font-weight-bold">{{ ROOT }}</a>
                         {%include 'list_dirs.twig'%}
                         <div class="list-group-item-dark text-center p-2 d-none">
                             <button type="button" class="btn btn-secondary btn-sm btn-cancel disabled">CANCEL</button>
@@ -34,7 +34,7 @@
                             <thead>
                             <tr>
                                 <th scope="col" id="checkboxControl">
-                                    <input type="checkbox" id="ControlCheckbox" class="d-none">
+                                    <input type="checkbox" id="controlCheckbox" class="d-none">
                                     <a href="javascript:void(0);" data-action="activateRedactor" id="activateRedactor" title="Show file operations menu">
                                         <img src="{{ FM_REL_PATH }}css/img/control/check.png" width="20px" alt="Show file operations menu">
                                     </a>
