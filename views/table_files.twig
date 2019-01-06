@@ -1,36 +1,17 @@
-<tr id="actions-panel" class="d-none">
-    <td colspan="6">
-        <a href="javascript:void(0);" title="copy files" class="actions-panel-item btn disabled">
-            <img src="{{ FM_REL_PATH }}css/img/control/copy.png" class="control_item" width="30px" alt="icon copy">
-            <p class="copy-text">Copy files</p>
-        </a>
-
-        <a href="javascript:void(0);" title="move files" class="actions-panel-item btn disabled">
-            <img src="{{ FM_REL_PATH }}css/img/control/move.png" class="control_item" width="30px" alt="icon move">
-            <p class="move-text">Move Files</p>
-        </a>
-
-        <a href="javascript:void(0);" title="delete files" data-action="delete" class="actions-panel-item btn disabled">
-            <img src="{{ FM_REL_PATH }}css/img/control/delete.png" class="control_item" width="30px" alt="icon delete">
-            <p class="delete-text">Delete Files</p>
-        </a>
-        <span id="closePanel">&#10006</span>
-    </td>
-</tr>
 {% if contentData['folders'] or contentData['files'] %}
     {% for name, data in contentData['folders'] %}
         <tr class="file_field" data-path="{{ data.path }}" data-name="{{ name }}">
-            <td>
+            <td class="checkbox-column">
                 <input type="checkbox" class="d-none" value="{{ name }}">
             </td>
 
-            <td class="type_img text-center ">
+            <td class="type_img text-center selectable">
                 <a href="{{ data.url }}" title="view" class="type_img-d navigation-link {{ data.classNewFile }}">
                     <img src="{{ FM_REL_PATH }}css/img/folder.png" width="40px">
                 </a>
             </td>
 
-            <td class="link-file text-left navigation-link">
+            <td class="link-file text-left navigation-link selectable">
                 <a href="{{ data.url }}" data-name="{{ name }}" data-type="folder" title="view" class="badge badge-info link_files">{{ name }}</a>
             </td>
 
@@ -40,9 +21,9 @@
                 </a>
             </td>
 
-            <td>{{ data.size }}</td>
+            <td class="selectable">{{ data.size }}</td>
 
-            <td class="file_change_date">{{ data.fileChangeDate }}</td>
+            <td class="file_change_date selectable">{{ data.fileChangeDate }}</td>
 
 
         </tr>
@@ -54,13 +35,13 @@
                <input type="checkbox" class="d-none" value="{{ name }}">
            </td>
 
-          <td class="type_img align-middle">
+          <td class="type_img align-middle selectable">
              <a href="{{ data.url }}" title="view" class="type_img-f navigation-link {{ data.classNewFile }}">
                 <img src="{{ data.img }}" width="40px" class="rounded">
              </a>
           </td>
 
-          <td class="link-file text-left navigation-link">
+          <td class="link-file text-left navigation-link selectable">
              <a href="{{ data.url }}" data-name="{{ name }}" data-type="file" title="view" class="badge badge-secondary link_files">{{ name }}</a>
           </td>
 
@@ -70,15 +51,15 @@
                </a>
            </td>
 
-          <td class="file_size">{{ data.size }}</td>
+          <td class="file_size selectable">{{ data.size }}</td>
 
-          <td class="file_change_date">{{ data.fileChangeDate }}</td>
+          <td class="file_change_date selectable">{{ data.fileChangeDate }}</td>
        </tr>
     {% endfor %}
 {% else %}
 
     <tr>
-        <td colspan="6">NO FILES...</td>
+        <td colspan="6" id="no_files">NO FILES...</td>
     </tr>
 
 {% endif %}

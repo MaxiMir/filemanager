@@ -10,7 +10,7 @@
 
     $configuration = [
         'settings' => [
-            'displayErrorDetails' => true,
+            'displayErrorDetails' => true
         ]
     ];
     
@@ -48,7 +48,8 @@
 
 
     /* TODO:
-        * Synchronous XMLHttpRequest - замена решения
+        * обнровление root при операциях
+        * при наведении на левое меню скролл
         * авторизация
         * ООП в utils
         * увеличение шрифтов в редакторе, просмотр страниц, сохранение для пользователя

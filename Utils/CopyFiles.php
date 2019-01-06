@@ -1,10 +1,11 @@
 <?php
 
     namespace FM\Utils;
-/*
+
     require_once '../../vendor/autoload.php';
 
     use FM\Render\HtmlMarkup;
+    use FM\FileData\FileFunc;
     use FM\FileData\PathInfo;
 
 
@@ -12,15 +13,23 @@
     {
         use Json;
 
+        private $name;
+        private $parentDir;
+        private $pathNewFile;
+        private $isDir;
+
         public function __construct()
         {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->data['msg'] = "Incorrect method of sending data.<br>";
             } else {
-                $fName = $_POST['fName'];
-                $newRelPath = $_POST['newRelPath'];
-                $type = $_POST['type'];
-                $overwrite = $_POST['overwrite'] == 'y' ? true : false;
+                $postData = array_map(function ($data) {
+                    return FileFunc::getRelPath($data);
+                }, $_POST);
+                $fName = $postData['fName'];
+                $newRelPath = $postData['newRelPath'];
+                $type = $postData['type'];
+                $overwrite = $postData['overwrite'] == 'Y' ? true : false;
                 $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
                 $relativePath = preg_replace('/\/'. FM_FOLDER_NAME .'/', '', $path, 1);
                 $oldParentDir = ROOT . $relativePath;

@@ -23,9 +23,12 @@
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->data['msg'] = 'Incorrect method of sending data';
             } else {
+                $postData = array_map(function ($data) {
+                    return FileFunc::getRelPath($data);
+                }, $_POST);
                 $relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
-                $type = FileFunc::cleanData($_POST['type']);
-                $this->name = FileFunc::cleanData($_POST['name']);
+                $type = $postData['type'];
+                $this->name = $postData['name'];
                 $this->parentDir = ROOT . $relativePath;
                 $this->pathNewFile = $this->parentDir . $this->name;
                 $this->isDir = $type == 'folder' ? true : false;
