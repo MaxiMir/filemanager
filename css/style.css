@@ -81,11 +81,12 @@
 	/*background-color: #dd4444;*/
 }
 
+
 .nav_control-link.hidden-arrow {
 	display: none;
 }
 
-.list_path-link.empty-dir {
+.list-group-item .empty-dir {
 	padding-left: 14px;
 }
 

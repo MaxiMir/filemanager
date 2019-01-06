@@ -31,7 +31,10 @@
         private function run()
         {
             foreach ($this->paths as $path) {
-                if (file_exists($path)) {
+
+                if (!file_exists($path)) {
+                    $this->data['msg'] = "Path is not exists: {$path}";
+                } else {
                     $contentData = FileFunc::getPathsData($path, $this->currDir);
                     $this->data['content'][$path] = HtmlMarkup::generate('list_dirs.twig', ['contentData' => ['listDirsData' => $contentData]]);
                 }

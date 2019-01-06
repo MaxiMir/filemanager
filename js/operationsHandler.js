@@ -1,9 +1,15 @@
 $(function () {
+<<<<<<< HEAD
     root = $('#root').text();
     leftNavSize = 285;
     tbody = $('#table_files tbody');
     relUrl = $('main').attr('data-relurl');
 
+=======
+    leftNavSize = 285;
+    tbody = $('#table_files tbody');
+    relUrl = $('main').attr('data-relurl');
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 
     /**
      * HANDLER: change size left menu
@@ -154,8 +160,12 @@ $(function () {
         const inputVal = input.val();
         const btnSbm = currForm.find("button[type='submit']");
         const btnCls = currForm.find("button[data-dismiss='modal']");
+<<<<<<< HEAD
         const type = input.attr('data-type'); console.log(type);
         const infoListForUpdate = getInfoListForUpdate();
+=======
+        const type = input.attr('data-type');
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 
 		e.preventDefault();
 
@@ -180,9 +190,13 @@ $(function () {
 					$.when(tbody
 						.html(data['content']))
 						.done(function () {
+<<<<<<< HEAD
 						    if (type === 'folder') {
                                 updateChildLists(infoListForUpdate);
                             }
+=======
+                            updateChildLists();
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 							showThenHideMsg(`${inputVal} successfully created`);
 						});
 				}
@@ -209,7 +223,10 @@ $(function () {
         const btnSbm = form.find("button[type='submit']");
         const data = new FormData();
         const files = $('#newFiles').get(0).files;
+<<<<<<< HEAD
         const infoListForUpdate = getInfoListForUpdate();
+=======
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 
         e.preventDefault();
 
@@ -251,6 +268,10 @@ $(function () {
                         $.when(tbody
 							.html(data['content']))
                             .done(function () {
+<<<<<<< HEAD
+=======
+                                updateChildLists();
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
                                 showThenHideMsg('Files successfully uploaded');
                             });
                     }
@@ -331,7 +352,10 @@ $(function () {
         const type = linkFile.attr('data-type');
         const iconsRename = $('[data-action="rename"]');
         const btnClose = $(this).next('.btn-cancel');
+<<<<<<< HEAD
         const infoListForUpdate = getInfoListForUpdate();
+=======
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 
 		if ($(this).hasClass('btn-cancel')) {
 			renameForm.remove();
@@ -359,10 +383,14 @@ $(function () {
 						if (data['result'] == 'error') {
 							showThenHideMsg(data['msg'], true);
 						} else {
+							updateChildLists();
 							$.when(tbody
 								.html(data['content']))
 								.done(function () {
+<<<<<<< HEAD
                                     updateChildLists(infoListForUpdate);
+=======
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
                                     activateRedactor();
 									showThenHideMsg('File successfully renamed');
 								});
@@ -394,7 +422,10 @@ $(function () {
 	$('body').on('click', '.files_delete #btnMesCancel, .files_delete #btnMesOk', function (e) {
         const idBtn = $(this).attr('id');
         const checkedFName = getCheckedFNames();
+<<<<<<< HEAD
         const infoListForUpdate = getInfoListForUpdate();
+=======
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 
         e.preventDefault();
         $('#spanClose').trigger('click');
@@ -414,7 +445,10 @@ $(function () {
                         $.when(tbody
                             .html(data['content']))
                             .done(function () {
+<<<<<<< HEAD
                                 updateChildLists(infoListForUpdate);
+=======
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
                                 refreshRedactor();
                                 showThenHideMsg('Files successfully deleted');
                             });
@@ -461,10 +495,38 @@ $(function () {
     });
 
 
+<<<<<<< HEAD
+=======
+    /**
+     * FUNCTION: opening tree folders from previous page
+     */
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
     loadPrevPageTree();
 });
 
+function activateRedactor() {
+    setActivitycontrolCheckbox();
+    $('#activateRedactor').hide();
+    $('#actions-panel, input:checkbox, a[data-action="rename"]').removeClass('d-none');
+}
 
+function refreshRedactor() {
+    setActivitycontrolCheckbox();
+    $('#controlCheckbox').prop('checked', false);
+    $('#actions-panel th a').addClass('disabled');
+    $('input:checkbox, a[data-action="rename"]').removeClass('d-none');
+}
+
+function deactivateRedactor() {
+	$('#actions-panel, #controlCheckbox, #table_files input:checkbox, a[data-action="rename"]').addClass('d-none');
+    $('#table_files input:checkbox:checked').prop('checked', false);
+	$('#activateRedactor').show();
+}
+
+function setActivitycontrolCheckbox() {
+    const valAttrDisabledMainCheckbox = $('#no_files').length === 1;
+
+<<<<<<< HEAD
 /**
  * FUNCTION: opening redactor
  */
@@ -483,6 +545,46 @@ function refreshRedactor() {
     $('#controlCheckbox').prop('checked', false);
     $('#actions-panel th a').addClass('disabled');
     $('input:checkbox, a[data-action="rename"]').removeClass('d-none');
+=======
+    $('#controlCheckbox').prop('disabled', valAttrDisabledMainCheckbox);
+}
+
+function loadPrevPageTree() {
+    if (window.sessionStorage && window.localStorage) {
+        const activeListLinkPaths = localStorage.activeListLinkPaths ? JSON.parse(localStorage.activeListLinkPaths) : [];
+
+        if (activeListLinkPaths.length > 0) {
+            $.post({
+                url: relUrl + 'Utils/GetListDirs.php',
+                dataType: 'json',
+                data: {
+                    'paths': activeListLinkPaths
+                },
+                success: function (data) {
+                    if (data['result'] === 'error') {
+                        showThenHideMsg(data['msg'], true);
+                    } else {
+                        $.each(data['content'], function (path, html) {
+                            const li = $('a[data-path="' + path + '"]').closest('li.list-group-item');
+                            const link = li.find('a.nav_control-link');
+                            const img = li.find('img[alt="show"]');
+
+                            link.addClass('active');
+                            img.css({
+                                'animation': 'rotate 0.01s',
+                                'animation-fill-mode': 'forwards'
+                            });
+                            li.append(html);
+                        });
+                    }
+                },
+                error: errorHandler = function () {
+                    showThenHideMsg('An error occurred while generating the directory tree', true);
+                }
+            });
+        }
+    }
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 }
 
 
@@ -523,6 +625,7 @@ function getCheckedFNames() {
  * FUNCTION: insert html code selected directories in the left menu
  */
 function generateChildList(path) {
+<<<<<<< HEAD
     const linkArrow = $('a[data-path="' + path + '"]');
     const imgArrow = linkArrow.find('img[alt="show"]');
     const parentLi = linkArrow.parent();
@@ -534,6 +637,20 @@ function generateChildList(path) {
         imgArrow.css({
             'animation': 'backRotate 0.01s',
             'animation-fill-mode': 'forwards'
+=======
+	const li = $('a[data-path="' + path + '"]').closest('li.list-group-item');
+    const link = li.find('a.nav_control-link');
+    const img = li.find('img[alt="show"]');
+    const ulNested = li.find('ul.list-group');
+
+    if (link.hasClass('active')) {
+        link.removeClass('active');
+        ulNested.hide('fast', function () {
+            img.css({
+                'animation': 'backRotate 0.01s',
+                'animation-fill-mode': 'forwards'
+            });
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
         });
     } else {
         linkArrow.addClass('active');
@@ -550,6 +667,7 @@ function generateChildList(path) {
                 dataType: 'json',
                 data: {
                     'paths': [path]
+<<<<<<< HEAD
                 },
                 success: function (data) {
                     parentLi.append(data['content'][path]);
@@ -679,11 +797,14 @@ function loadPrevPageTree() {
                 dataType: 'json',
                 data: {
                     'paths': activeListLinkPaths
+=======
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
                 },
                 success: function (data) {
                     if (data['result'] === 'error') {
                         showThenHideMsg(data['msg'], true);
                     } else {
+<<<<<<< HEAD
                         $.each(data['content'], function (path, html) {
                             const li = $('a[data-path="' + path + '"]').closest('li.list-group-item');
                             const link = li.find('a.nav_control-link');
@@ -697,6 +818,16 @@ function loadPrevPageTree() {
                             li.append(html);
                         });
                     }
+=======
+                        if (ulNested.length !== 0) {
+                            ulNested.closest('.list-group').remove();
+                        }
+                        li.append(data['content'][path]);
+                    }
+                },
+                error: errorHandler = function () {
+                    showThenHideMsg('An error occurred while generating the directory tree', true);
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
                 }
             });
         }
@@ -807,6 +938,7 @@ function generateModalWindow(aClass, msg, header, data = null) {
 			role: 'document',
 			append: $('<div>', {
 				class: 'modal-content'
+<<<<<<< HEAD
 			})
 		})
 	}).appendTo('footer'),
@@ -854,4 +986,101 @@ function generateModalWindow(aClass, msg, header, data = null) {
 			text: 'OK'
 		}))
 	}).appendTo('#modalQuestion .modal-content');
+=======
+			})
+		})
+	}).appendTo('footer'),
+
+	$('<div>', {
+		class: 'modal-header bg-warning',
+		append: $('<h5>', {
+				class: 'modal-title',
+				text: header
+		})
+		.add($('<button>', {
+			class: 'close',
+			type: 'button',
+			'data-dismiss': 'modal',
+			'aria-label': 'Close',
+			append: $('<span>', {
+				id: 'spanClose',
+				'aria-hidden': 'true',
+				html: '&times;'
+			})
+		}))
+	}).appendTo('#modalQuestion .modal-content'),
+
+	$('<div>', {
+		class: 'modal-body',
+		append: $('<p>', {
+			class: 'question-text',
+			text: msg
+		})
+	}).appendTo('#modalQuestion .modal-content'),
+
+	$('<div>', {
+		class: 'modal-footer',
+		append: $('<button>', {
+				type: 'button',
+				id: 'btnMesCancel',
+				class: 'btn btn-secondary',
+				'data-dismiss': 'modal',
+				text: 'CANCEL'
+		})
+		.add($('<button>', {
+			type: 'button',
+			id: 'btnMesOk',
+			class: 'btn btn-primary',
+			text: 'OK'
+		}))
+	}).appendTo('#modalQuestion .modal-content');
+}
+
+function getCheckedFNames() {
+    let pathFiles = [];
+
+    $.each($('input:checkbox:checked').not("#controlCheckbox"), function () {
+        pathFiles.push($(this).val());
+    });
+
+    return pathFiles;
+}
+
+
+function getListsForUpdate(paths = []) {
+    let listForUpdate = [];
+    const root = $('#root').text();
+    const urn = $(location).attr('pathname');
+    paths.push = root + urn.replace(relUrl, '');
+    $.each(paths, function (i, val) {
+        listForUpdate[val] = $('#list_paths [data-path="' + val + '"]').hasClass('active');
+    });
+    return listForUpdate;
+}
+
+function updateChildLists(data) {
+    // $.each(data, function () {
+    // if (!hasChildDirs && isIssetControlArrow) {
+    //     controlArrow.detach();
+    //     if (isActiveControlArrow) {
+    //         parentUl.find('ul.list-group').detach();
+    //     }
+    // } else {
+    //     if (!isIssetControlArrow) {
+    //         $('<a>', {
+    //             href: 'javascript:void(0);',
+    //             class: 'nav_control-link',
+    //             'data-path': currPath,
+    //             append: $('<img>', {
+    //                 src: '/fm/css/img/control/down-arrow.png',
+    //                 width: '10px',
+    //                 alt: 'show'
+    //             })
+    //         }).prependTo(parentUl);
+    //     } else if (isActiveControlArrow) {
+    //         parentUl.find('ul.list-group').detach();
+    //
+    //     }
+    // }
+>>>>>>> 1d5cd1299b308de7036ccc634fd13d44e65a254c
 }
