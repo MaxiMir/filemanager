@@ -48,14 +48,10 @@ $(function () {
 					source = code;
 				}
 
-				msg
-					.html(text)
-					.show()
-					.delay(1500)
-					.hide(300);
+                showThenHideMsg(text);
 			},
 			error: errorHandler = function () {
-				msg.text('Error loading files');
+                showThenHideMsg('Error loading files', true);
 			}
 		});
 	});
@@ -92,4 +88,17 @@ function setEditorMode() {
 		};
 
 	return ext in modes ? modes[ext] : 'text';
+}
+
+function showThenHideMsg(msg, error = null) {
+    const showTime = error ? 2000 : 1000;
+
+    $('.main-message')
+        .html(msg)
+        .attr('class', function () {
+            return error ? 'main-message text-danger' : 'main-message text-success';
+        })
+        .show()
+        .delay(showTime)
+        .fadeOut(100);
 }

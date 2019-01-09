@@ -4,8 +4,6 @@
 
     require_once '../../vendor/autoload.php';
 
-    use FM\FileData\FileFunc;
-
 	class ChangeContent implements UtilsInterface
     {
         use Json;
