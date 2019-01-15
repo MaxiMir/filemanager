@@ -24,10 +24,10 @@
 			if (!empty($_FILES)) {
 				$relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
 				$this->parentDir = ROOT . $relativePath;
-                if (!is_dir($this->parentDir)) {
-                    $this->data['msg'] = "Path is incorrect: <br>'{$this->parentDir}'";
+                if (is_dir($this->parentDir)) {
+                	$this->run();
                 } else {
-                    $this->run();
+                	$this->data['msg'] = "Path is incorrect: <br>'{$this->parentDir}'";
                 }
 			}
 		}

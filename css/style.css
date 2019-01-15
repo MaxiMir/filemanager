@@ -17,11 +17,114 @@
 	line-height: 150px;
 }
 
+/* Search */
+.navbar-checkboxs {
+	width: 100%;
+	height: 3.5rem;
+	text-align: center;
+}
+
+.navbar-checkboxs-item {
+	display: inline-block;
+	padding: 1rem;
+}
+
+.navbar-checkboxs-item input[type=checkbox] {
+	width: 1.02rem;
+	height: 1.02rem;
+}
+
+.navbar-checkboxs-item input[type="checkbox"] { display: none; }
+
+.navbar-checkboxs-item input[type="checkbox"] + label {
+	display: block;
+	position: relative;
+	padding-left: 35px;
+	color: #fff;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+.navbar-checkboxs-item input[type="checkbox"] + label:last-child { margin-bottom: 0; }
+
+.navbar-checkboxs-item input[type="checkbox"] + label:before {
+	content: '';
+	display: block;
+	width: 20px;
+	height: 20px;
+	border: 1px solid #6cc0e5;
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: .6;
+	-webkit-transition: all .12s, border-color .08s;
+	transition: all .12s, border-color .08s;
+}
+
+.navbar-checkboxs-item input[type="checkbox"]:checked + label:before {
+	width: 10px;
+	top: -5px;
+	left: 5px;
+	border-radius: 0;
+	opacity: 1;
+	border-top-color: transparent;
+	border-left-color: transparent;
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+.searchByName_block {
+	margin-right: 1rem;
+}
+
+.searchByName_block .searchByName_block_icon {
+	position: absolute;
+	top: 0.9rem;
+	right: -0.5rem;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	/*pointer-events: auto;*/
+}
+
+.searchByName_block .searchByName_block_text {
+	visibility: hidden;
+	position: absolute;
+	top: -3rem;
+	right: -20rem;
+	background: #282b33;
+	color: #17a2b8;;
+	padding: 0.7rem;
+	z-index: 100;
+	text-align: left;
+	border: 1px solid #6bccf9;
+	-moz-box-shadow:0 5px 5px rgba(0,0,0,0.3);
+	-webkit-box-shadow:0 5px 5px rgba(0,0,0,0.3);
+	box-shadow:0 5px 5px rgba(0,0,0,0.3);
+}
+
+.searchByName_block .searchByName_block_text .searchByName_block_text-header {
+	font-weight: bold;
+	text-align: center;
+	text-decoration: underline;
+}
+
+.searchByName_block .searchByName_block_text p span {
+	color: #a9cedb;
+}
+
+.searchByName_block_icon:hover + .searchByName_block_text {
+	visibility: visible;
+}
+
+
 /* Left Menu */
 
 .block-list_paths {
 	position: relative;
-    width: 240px;
+    width: 285px;
 	z-index: 100;
 	min-height: 100vh;
 	height: 100%;
@@ -94,11 +197,14 @@
 	display: inline;
 }
 
+
 /* Table Files */
+
 #table-block {
 	min-height: 100%;
 	background-color: #282c34;
 }
+
 #table_files {
     margin-bottom: 0;
     background-color: #282c34;
@@ -261,6 +367,7 @@
 	padding: 10px;
 	height: 70px;
 }
+
 #actions-panel span {
 	float:right;
 	display:inline-block;
@@ -282,7 +389,9 @@
 	height: 80vh;
 }
 
-/*  Lamp */
+
+/* Lamp */
+
 .lamp {
 	background-color: rgba(0,0,0,0.7);
 	border-radius: 0.75em;
@@ -355,10 +464,12 @@
     transform: translate3d(0, -1rem, 0);
   }
 }
+
 .bouncing-loader {
   display: flex;
   justify-content: center;
 }
+
 .bouncing-loader > div {
   width: 1rem;
   height: 1rem;
@@ -367,9 +478,11 @@
   border-radius: 50%;
   animation: bouncing-loader 0.6s infinite alternate;
 }
+
 .bouncing-loader > div:nth-child(2) {
   animation-delay: 0.2s;
 }
+
 .bouncing-loader > div:nth-child(3) {
   animation-delay: 0.4s;
 }
@@ -396,4 +509,80 @@
 	100% {
 		transform: rotate(0deg);
 	}
+}
+
+/* Checkbox  */
+
+
+/* The switch - the box around the slider */
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+	float:right;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+input.default:checked + .slider {
+	background-color: #444;
+}
+input.primary:checked + .slider {
+	background-color: #2196F3;
+}
+input.success:checked + .slider {
+	background-color: #8bc34a;
+}
+input.info:checked + .slider {
+	background-color: #3de0f5;
+}
+input.warning:checked + .slider {
+	background-color: #FFC107;
+}
+input.danger:checked + .slider {
+	background-color: #f44336;
+}
+
+input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.boxes {
+	margin: auto;
+	padding: 50px;
+	background: #484848;
 }

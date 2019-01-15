@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>File: {{ header }}</title>
@@ -18,14 +19,14 @@
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                        <a class="navbar-brand" href="/{{ FM_FOLDER_NAME }}/">File-manager</a>
-                        <div class="collapse navbar-collapse">
-                            {%block navbar%}
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <a class="navbar-brand" href="/{{ FM_FOLDER_NAME }}/">File-manager</a>
+                    <div class="collapse navbar-collapse">
+                        {%block navbar%}
                             <ul class="navbar-nav mr-auto">
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="modal" data-target="#modalNewFile" href="javascript:void(0);">Create File</a>
@@ -37,16 +38,44 @@
                                     <a class="nav-link" data-toggle="modal" data-target="#modalUploadsFiles" href="javascript:void(0);">Upload File</a>
                                 </li>
                             </ul>
-                            {%endblock%}
-                            <form class="form-inline my-2 my-lg-0">
-                                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                                <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
-                            </form>
+                        {%endblock%}
+                        <form class="form-inline my-2 my-lg-0">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+                        </form>
+                    </div>
+                </nav>
+                <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+                    <div class="navbar-checkboxs">
+                        <div class="navbar-checkboxs-item">
+                            <input type="checkbox" id="searchInCurrDir" checked>
+                            <label class="form-check-label" for="searchInCurrDir" checked="checked">Search in current directory</label>
                         </div>
-                    </nav>
-                </div>
+                        <div class="navbar-checkboxs-item position-relative searchByName_block">
+                            <input type="checkbox" id="searchByName">
+                            <label class="form-check-label" for="searchByName">Search by file name</label>
+                            <div class="searchByName_block_icon">
+                                <img src="/fm/css/img/control/info.png" alt="" width="20px">
+                            </div>
+                            <div class="searchByName_block_text">
+                                <p class="searchByName_block_text-header">Options for searching by file name:</p>
+                                <p><span>?</span> - replaces any character</p>
+                                <p><span>*</span> - replaces any character set</p>
+                            </div>
+                        </div>
+                        <div class="navbar-checkboxs-item">
+                            <input type="checkbox" id="contentSearch" checked>
+                            <label class="form-check-label" for="contentSearch">Content search</label>
+                        </div>
+                        <div class="navbar-checkboxs-item">
+                            <input type="checkbox" id="сaseInsensitiveSearch">
+                            <label class="form-check-label" for="сaseInsensitiveSearch">Сase-insensitive search</label>
+                        </div>
+                    </div>
+                </nav>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-	<div class="container">
+<div class="container">

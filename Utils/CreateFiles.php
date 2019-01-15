@@ -4,9 +4,9 @@
 
     require_once '../../vendor/autoload.php';
 
-    use FM\Render\HtmlMarkup;
-    use FM\FileData\FileFunc;
-    use FM\FileData\PathInfo;
+    use \FM\Render\HtmlMarkup;
+    use \FM\FileData\FileFunc;
+    use \FM\FileData\PathInfo;
 
 
     class CreateFiles implements UtilsInterface
@@ -23,9 +23,7 @@
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->data['msg'] = 'Incorrect method of sending data';
             } else {
-                $postData = array_map(function ($data) {
-                    return FileFunc::getRelPath($data);
-                }, $_POST);
+            	$postData = FileFunc::cleanData($_POST);
                 $relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
                 $type = $postData['type'];
                 $this->name = $postData['name'];
@@ -52,7 +50,7 @@
             $resOper = $this->isDir ? mkdir($this->pathNewFile) : touch($this->pathNewFile);
 
             if (!$resOper) {
-                $this->data['msg'] .= "Could not create file '{$this->name}'";
+                $this->data['msg'] = "Could not create file '{$this->name}'";
             } else {
                 $this->data['result'] = 'success';
                 $path = new PathInfo($this->parentDir);

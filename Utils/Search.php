@@ -21,15 +21,26 @@
 
         private function run()
         {
-            $files = glob($dir."/*.html"); // Получаем все html-файлы из директории
-            $results = array(); // Создаём массив для результатов поиска
-            for ($i = 0; $i < count($files); $i++) {
-                /* Перебираем все полученные файлы */
-                $str = strip_tags(file_get_contents($files[$i])); // Помещаем содержимое файлов в переменную, предварительно убрав все html-теги
-                $count = substr_count($str, $search); // Ищем количество вхождений искомой строки в файл
-                if ($count) $results[$files[$i]] = $count; // Если хотя бы 1 вхождение найдено, то добавляем файл с количеством вхождений в массив результатов
-            }
-            return $results; // Возвращаем результат
+            $path = '/var/www/x.ru/slim/';
+            $fName = 'index.php';
+            $output = shell_exec("find {$path} -name {$fName}");
+            echo "<pre>$output</pre>";
+
+
+            /*
+                * заменяет 1 символ '?word'
+                * содержащие в имени слово *word*
+                * файлы с расширением jpg *.jpg
+            */
+
+            $search = 'function';
+            $output = shell_exec("grep -r '{$search}' $path");
+            echo "<pre>$output</pre>";
+
+            /*
+            * -i нерегистрозависимый
+            */
         }
-        }
+
+
     }

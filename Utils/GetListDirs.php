@@ -21,9 +21,8 @@
             } else {
             	$relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
             	$this->currDir = ROOT . $relativePath;
-                $paths = FileFunc::cleanData($_POST['paths']);
 
-                $this->paths = $paths;
+                $this->paths = FileFunc::cleanData($_POST['paths']);
                 $this->run();
             }
         }

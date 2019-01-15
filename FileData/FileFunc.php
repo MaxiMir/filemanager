@@ -14,6 +14,7 @@
         public static function getDirSize($fpath)
         {
             $size = 0;
+
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($fpath, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
 
             foreach ($iterator as $filename => $fileInfo) {

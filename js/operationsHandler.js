@@ -1,6 +1,5 @@
 $(function () {
     root = $('#root').text();
-    leftNavSize = 285;
     tbody = $('#table_files tbody');
     relUrl = $('main').attr('data-relurl');
 
@@ -21,6 +20,7 @@ $(function () {
             });
         },
         resize: function ( event, ui ) {
+            const leftNavSize = 285;
             const width = $('.main_content').width() - ui.size.width - 30; // 30 - left, right padding
             const left = ui.size.width - leftNavSize;
 
@@ -471,7 +471,7 @@ $(function () {
 function activateRedactor() {
     setActivityControlCheckbox();
     $('#activateRedactor').hide();
-    $('#actions-panel, input:checkbox, a[data-action="rename"]').removeClass('d-none');
+    $('#actions-panel, #table_files input:checkbox, a[data-action="rename"]').removeClass('d-none');
 }
 
 
@@ -482,7 +482,7 @@ function refreshRedactor() {
     setActivityControlCheckbox();
     $('#controlCheckbox').prop('checked', false);
     $('#actions-panel th a').addClass('disabled');
-    $('input:checkbox, a[data-action="rename"]').removeClass('d-none');
+    $('#table_files input:checkbox, a[data-action="rename"]').removeClass('d-none');
 }
 
 
@@ -511,7 +511,7 @@ function setActivityControlCheckbox() {
 function getCheckedFNames() {
     let pathFiles = [];
 
-    $.each($('input:checkbox:checked').not("#controlCheckbox"), function () {
+    $.each($('#table_files input:checkbox:checked').not("#controlCheckbox"), function () {
         pathFiles.push($(this).val());
     });
 
