@@ -47,6 +47,6 @@
             return [
                 'fileExt' => $ext,
                 'fileContent' => $content
-            ];           
+            ];
         }
     }

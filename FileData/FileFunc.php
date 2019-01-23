@@ -28,7 +28,7 @@
 
         public static function chooseImg($fPath)
         {
-            $fileExt = pathinfo($fPath, PATHINFO_EXTENSION);
+            $fileExt = trim(pathinfo($fPath, PATHINFO_EXTENSION));
 
             if (file_exists(FM_PATH . "css/img/{$fileExt}.png")) {
                 return FM_REL_PATH . "css/img/{$fileExt}.png";
@@ -48,7 +48,7 @@
             foreach ($amountOfInformation as $unit => $size) {
                 if ($numberOfBytes >= $size) {
                     return number_format($numberOfBytes / $size, 1, '.', '') . " {$unit}";
-                } 
+                }
             }
             return "{$numberOfBytes} b";
         }
@@ -58,7 +58,7 @@
             $path = parse_url($url, PHP_URL_PATH);
             return preg_replace('/\/'. FM_FOLDER_NAME .'\//', '', $path, 1);
         }
-        
+
         public static function isValidName($fName)
         {
             $stop_symbols = ['!', '@', '#', '$', '&', '~', '%', '*', '(', ')', '[', ']', '{', '}', '\'', '"', '\\', '/', ':', ';', '>', '<', '`', ' '];
@@ -90,7 +90,7 @@
 
         public static function delDir($fPath)
         {
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($fPath, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST); 
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($fPath, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
 
             foreach ($iterator as $filename => $fileInfo) {
                 if ($fileInfo->isDir()) {
@@ -113,9 +113,9 @@
                 $relPath = str_replace(ROOT, "/".FM_FOLDER_NAME."/", $path);
                 $isEmptyDir = empty(glob("{$path}/*", GLOB_ONLYDIR)) ? 'Y' : 'N';
                 $acc[$fName] = [
-                		"path" => "{$path}/",
-                		"relPath" => "{$relPath}/",
-                		"isEmptyDir" => $isEmptyDir,
+                    "path" => "{$path}/",
+                    "relPath" => "{$relPath}/",
+                    "isEmptyDir" => $isEmptyDir,
                 ];
                 return $acc;
             }, []);
