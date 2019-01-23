@@ -4,43 +4,82 @@
 
     require_once '../../vendor/autoload.php';
 
+    use FM\Render\HtmlMarkup;
+    use FM\FileData\FileFunc;
+
     class Search implements UtilsInterface
     {
-        // поиск в текущей директории по дефолту в ROOT
-        // поиск по названию
-        // поиск по содержимому
+        use Json;
+
         private $searchPhrase;
-        private $searchPath = ROOT;
-        private $searchByContent = true;
-        private $searchByFName = false;
+        private $searchPath;
+        private $contentData = [];
+        private $options = [
+            'searchInCurrDir' => false,
+            'searchByName' => false,
+            'contentSearch' => false,
+            'caseInsensitiveSearch' => false
+        ];
 
         public function __construct()
         {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                $this->data['msg'] = "Incorrect method of sending data.<br>";
+            } else {
+                $this->searchPhrase = $_POST['searchPhrase'];
+                $newOptions = json_decode($_POST['searchOptions'], true);
+                $this->options = array_merge($this->options, $newOptions);
+                $this->searchPath = !$this->options['searchInCurrDir'] ? ROOT : ROOT . FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
 
+                $this->run();
+            }
         }
 
         private function run()
         {
-            $path = '/var/www/x.ru/slim/';
-            $fName = 'index.php';
-            $output = shell_exec("find {$path} -name {$fName}");
-            echo "<pre>$output</pre>";
+            $caseInsensitiveSearch = $this->options['caseInsensitiveSearch'];
+            $searchPath = $this->searchPath;
+            $searchPhrase = $this->searchPhrase;
 
+            if ($this->options['searchByName']) {
+                $opRegister = $caseInsensitiveSearch ? '-iname' : '-name';
 
-            /*
-                * заменяет 1 символ '?word'
-                * содержащие в имени слово *word*
-                * файлы с расширением jpg *.jpg
-            */
+                $filesData = shell_exec("find {$searchPath} {$opRegister} '{$searchPhrase}'");
+                $this->contentData['searchFiles'] = array_reduce(explode(ROOT, $filesData), function ($acc, $relPath) {
+                    if (!empty($relPath)) {
+                        $fullPath = ROOT . trim($relPath);
+                        $acc[$relPath]['href'] = '/' . FM_FOLDER_NAME . '/' . FileFunc::getRelUrl($fullPath);
+                        $acc[$relPath]['src'] = is_dir($fullPath) ? FM_REL_PATH . 'css/img/folder.png' : FileFunc::chooseImg($fullPath);
+                    }
+                    return $acc;
+                }, []);
+            }
 
-            $search = 'function';
-            $output = shell_exec("grep -r '{$search}' $path");
-            echo "<pre>$output</pre>";
+            if ($this->options['contentSearch']) {
+                $opRegister = $caseInsensitiveSearch ? '-i' : '';
 
-            /*
-            * -i нерегистрозависимый
-            */
+                $filesData = shell_exec("grep -I -r {$opRegister} '{$searchPhrase}' {$searchPath}");
+                $this->contentData['contentSearch'] = array_reduce(explode(ROOT, $filesData), function ($acc, $dataPath) use ($searchPhrase) {
+                    if (!empty($dataPath)) {
+                        $relPath = strstr($dataPath, ':', true);
+                        $fullPath = ROOT . $relPath;
+
+                        if (empty($acc[$relPath]['href']) && empty($acc[$relPath]['src'])) {
+                            $acc[$relPath]['href'] = '/'. FM_FOLDER_NAME . '/' . FileFunc::getRelUrl($fullPath) . "#find=" . base64_encode($searchPhrase);
+                            $acc[$relPath]['src'] = FileFunc::chooseImg($fullPath);
+                        }
+                        $text = trim(str_replace("{$relPath}:", '', $dataPath));
+                        $acc[$relPath]['text'][] = $text;
+                    }
+                    return $acc;
+                }, []);
+            }
+
+            $this->data['content'] = HtmlMarkup::generate('search.twig', ['contentData' => $this->contentData]);
+            $this->data['result'] = 'success';
         }
-
-
     }
+
+
+    $newSearch = new Search();
+    $newSearch->echoJsonEncode();

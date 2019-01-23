@@ -13,14 +13,14 @@
 
         private $paths;
         private $currDir;
-        
+
         public function __construct()
         {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->data['msg'] = 'Incorrect method of sending data';
             } else {
-            	$relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
-            	$this->currDir = ROOT . $relativePath;
+                $relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
+                $this->currDir = ROOT . $relativePath;
 
                 $this->paths = FileFunc::cleanData($_POST['paths']);
                 $this->run();

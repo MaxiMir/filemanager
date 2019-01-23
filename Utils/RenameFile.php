@@ -55,7 +55,7 @@
                 $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
             }
         }
-	}
+    }
 
     $newRenameFile = new RenameFile();
     $newRenameFile->echoJsonEncode();

@@ -23,7 +23,7 @@
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->data['msg'] = 'Incorrect method of sending data';
             } else {
-            	$postData = FileFunc::cleanData($_POST);
+                $postData = FileFunc::cleanData($_POST);
                 $relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
                 $type = $postData['type'];
                 $this->name = $postData['name'];

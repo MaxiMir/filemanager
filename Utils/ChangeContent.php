@@ -4,7 +4,7 @@
 
     require_once '../../vendor/autoload.php';
 
-	class ChangeContent implements UtilsInterface
+    class ChangeContent implements UtilsInterface
     {
         use Json;
 
