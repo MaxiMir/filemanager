@@ -431,6 +431,96 @@ $(function () {
 
 
     /**
+     * HANDLER: search panel
+     */
+
+    $('[aria-label="Search"]').on('click', function () {
+        $('#searchPanel').removeClass('d-none');
+    });
+
+    $('#closeSearch').on('click', function () {
+        $('#searchPanel').addClass('d-none');
+    });
+
+    $('#searchBtn').on('click', function (e) {
+        const searchPhrase = $('[aria-label="Search"]').val();
+        const btnSearch = $('#searchBtn');
+        const isCheckedSearchByFname = $('#searchByName').is(':checked');
+        const isCheckedContentSearch = $('#contentSearch').is(':checked');
+
+        e.preventDefault();
+
+        if (!isCheckedSearchByFname && !isCheckedContentSearch) {
+            showThenHideMsg('Error, not specified search type', true);
+        } else if(searchPhrase === '') {
+            showThenHideMsg('Error, enter search phrase', true);
+        } else {
+            const searchOptions = {};
+
+            $.each($('.navbar-checkboxs input:checkbox:checked'), function () {
+                const valCheckbox = $(this).val();
+                searchOptions[valCheckbox] = true;
+            });
+
+            $.post({
+                url: relUrl + 'Utils/Search.php',
+                dataType: 'json',
+                beforeSend: function (data) {
+                    btnSearch.prop('disabled', true);
+                    $('.bouncing-loader_container').removeClass('d-none')
+                        .closest('tbody')
+                        .find('tr:not(:first-child)')
+                        .fadeOut('fast',  generateLoader());
+                },
+                data: {
+                    'searchPhrase': searchPhrase,
+                    'searchOptions':  JSON.stringify(searchOptions)
+                },
+                success: function (data) {
+                    if (data['result'] === 'error') {
+                        showThenHideMsg(data['msg'], true);
+                    } else {
+                        const htmlSearchContent = $('<output>').append($.parseHTML(data['content']));
+                        const paragraphsWithSearchText = htmlSearchContent.find('.text_search-content');
+                        const isInsensitiveSearch = searchOptions['caseInsensitiveSearch'];
+
+                        $.each(paragraphsWithSearchText, function () {
+                            let contentWithMark = $('<p></p>');
+                            const content = $(this).text();
+                            const pattern = new RegExp(searchPhrase, 'i');
+                            const searchText = isInsensitiveSearch ? content.match(pattern) : searchPhrase;
+                            const contents = content.split(searchText);
+
+                            if ($.inArray('', contents) === -1) {
+                                $('<span>', { text: contents[0] }).add($('<mark>', { text: searchText }))
+                                    .add($('<span>', { text: contents[1] }))
+                                    .appendTo(contentWithMark);
+                            } else {
+                                $.each(contents, function (ind, content) {
+                                    if (content === '') {
+                                        $('<mark>', { text: searchText }).appendTo(contentWithMark);
+                                    } else {
+                                        $('<span>', { text: content }).appendTo(contentWithMark);
+                                    }
+                                });
+                            }
+
+                            $(this).html(contentWithMark);
+                        });
+
+                        const htmlSearchContentWithMark = htmlSearchContent.html();
+                        tbody.html(htmlSearchContentWithMark);
+                    }
+                },
+                complete: function (data) {
+                    btnSearch.prop('disabled', false);
+                }
+            });
+        }
+    });
+
+
+    /**
      * HANDLER: scroll
      */
     $(window).scroll(function () {
@@ -453,7 +543,8 @@ $(function () {
             let activeListLinkPaths = [];
 
             $.each($('.nav_control-link.active'), function () {
-                activeListLinkPaths.push($(this).attr('data-path'));
+                activeListLinkPaths.push($(this)
+                    .attr('data-path'));
             });
 
             localStorage.activeListLinkPaths = JSON.stringify(activeListLinkPaths);
@@ -854,4 +945,18 @@ function generateModalWindow(aClass, msg, header, data = null) {
                     text: 'OK'
                 }))
         }).appendTo('#modalQuestion .modal-content');
+}
+
+
+/**
+ * FUNCTION: generate loader
+ */
+function generateLoader() {
+    $('<div>', {
+        class: 'bouncing-loader',
+        append: $('<div>')
+            .add($('<div>'))
+            .add($('<div>'))
+            .add($('<div>'))
+    }).appendTo('.bouncing-loader_container');
 }
