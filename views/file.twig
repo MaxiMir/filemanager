@@ -1,38 +1,38 @@
 {%include 'file_header.twig'%}
 
-    <main role="main" data-relurl="{{ FM_REL_PATH }}">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <h1 class="page-header">{{ header }}</h1>
-                    <h2 class="text-success main-message d-none"></h2>
-                    <nav aria-label="breadcrumb">
-                      <ol class="breadcrumb">
+<main role="main" data-relurl="{{ FM_REL_PATH }}">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="page-header">{{ header }}</h1>
+                <h2 class="text-success main-message d-none"></h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ FM_REL_PATH }}">Home</a></li>
                         {% autoescape false %}
                             {{ breadcrumbs }}
-                        {% endautoescape %}    
-                      </ol>
-                    </nav>
-                </div>
-            </div> 
-            <div class="row">                
-                <div class="col-4">
-                	 <button type="button" class="btn btn-secondary" id="btnRemove" data-toggle="tooltip" title="Remove changes" disabled>Source</button>
-                </div>
-                <div class="col-4 text-center">
-                	<input class="lamp" type="checkbox" data-toggle="tooltip" title="day/night mode">
-                </div>                
-                <div class="col-4 text-right">              	 
-                    <button type="button" class="btn btn-primary" id="btnSave" data-toggle="tooltip" title="Save changes" disabled>Save</button>
-				</div>
-			</div>		
-            <div class="row mt-3">
-                <div class="col-12">	
-        			<div id="editor" data-ext="{{ contentData.fileExt }}">{{ contentData.fileContent }}</div>   
-                </div>
-            </div>  
+                        {% endautoescape %}
+                    </ol>
+                </nav>
+            </div>
         </div>
-    </main>   
+        <div class="row">
+            <div class="col-4">
+                <button type="button" class="btn btn-secondary" id="btnRemove" data-toggle="tooltip" title="Remove changes" disabled>Source</button>
+            </div>
+            <div class="col-4 text-center">
+                <input class="lamp" type="checkbox" data-toggle="tooltip" title="day/night mode">
+            </div>
+            <div class="col-4 text-right">
+                <button type="button" class="btn btn-primary" id="btnSave" data-toggle="tooltip" title="Save changes" disabled>Save</button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div id="editor" data-ext="{{ contentData.fileExt }}">{{ contentData.fileContent }}</div>
+            </div>
+        </div>
+    </div>
+</main>
 
 {%include 'file_footer.twig'%}

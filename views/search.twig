@@ -1,0 +1,61 @@
+<tr>
+	<td class="bouncing-loader_container d-none" colspan="6"></td>
+</tr>
+
+{% if contentData['searchFiles'] %}
+	<tr>
+		<td colspan="6" class="td_header">IN FILE NAMES:</td>
+	</tr>
+
+	{% for fName, data in contentData['searchFiles'] %}
+
+	       <tr class="file_field">
+			   <td class="type_img text-center selectable">
+				   <a href="{{ data['href'] }}" title="view" class="type_img-d navigation-link">
+					   <img src="{{ data['src'] }}" width="40px">
+				   </a>
+			   </td>
+			   <td class="link-file text-left navigation-link selectable" colspan="5">
+				   <a href="{{ data['href'] }}" title="view" class="badge badge-info link_files">{{ ROOT }}{{ fName }}</a>
+			   </td>
+           </tr>
+
+	{% endfor %}
+
+{% endif %}
+
+
+{% if contentData['contentSearch'] %}
+	<tr>
+		<td colspan="6" class="td_header">IN CONTENT:</td>
+	</tr>
+
+    {% for fName, data in contentData['contentSearch'] %}
+
+		<tr class="file_field">
+			<td class="type_img text-center selectable">
+				<a href="{{ data['href'] }}" title="view" class="type_img-d navigation-link">
+					<img src="{{ data['src'] }}" width="40px">
+				</a>
+			</td>
+			<td class="link-file text-left navigation-link selectable" colspan="5">
+				<a href="{{ data['href'] }}" title="view" class="badge badge-info link_files">{{ fName }}</a>
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="6" class="text_search">
+				{% for text in data['text'] %}
+					<div class="text_search-content">{{ text }}</div>
+                {% endfor %}
+			</td>
+		</tr>
+
+    {% endfor %}
+{% endif %}
+
+{% if contentData['searchFiles']|length == 0 and contentData['contentSearch']|length == 0 %}
+    <tr>
+        <td colspan="6">NO FOUND...</td>
+    </tr>
+{% endif %}

@@ -1,3 +1,7 @@
+<tr>
+    <td class="bouncing-loader_container d-none" colspan="6"></td>
+</tr>
+
 {% if contentData['folders'] or contentData['files'] %}
     {% for name, data in contentData['folders'] %}
         <tr class="file_field" data-path="{{ data.path }}" data-name="{{ name }}">
@@ -30,31 +34,31 @@
     {% endfor %}
 
     {% for name, data in contentData['files'] %}
-       <tr class="file_field">
-           <td class="link-file">
-               <input type="checkbox" class="d-none" value="{{ name }}">
-           </td>
+        <tr class="file_field">
+            <td class="link-file">
+                <input type="checkbox" class="d-none" value="{{ name }}">
+            </td>
 
-          <td class="type_img align-middle selectable">
-             <a href="{{ data.url }}" title="view" class="type_img-f navigation-link {{ data.classNewFile }}">
-                <img src="{{ data.img }}" width="40px" class="rounded">
-             </a>
-          </td>
+            <td class="type_img align-middle selectable">
+                <a href="{{ data.url }}" title="view" class="type_img-f navigation-link {{ data.classNewFile }}">
+                    <img src="{{ data.img }}" width="40px" class="rounded">
+                </a>
+            </td>
 
-          <td class="link-file text-left navigation-link selectable">
-             <a href="{{ data.url }}" data-name="{{ name }}" data-type="file" title="view" class="badge badge-secondary link_files">{{ name }}</a>
-          </td>
+            <td class="link-file text-left navigation-link selectable">
+                <a href="{{ data.url }}" data-name="{{ name }}" data-type="file" title="view" class="badge badge-secondary link_files">{{ name }}</a>
+            </td>
 
-           <td>
-               <a href="javascript:void(0);" title="rename {{ name }}" data-action="rename" data-name={{ name }} data-path="{{ data.path }}" class="d-none btn">
-                   <img src="{{ FM_REL_PATH }}css/img/control/edit.png" width="35px" class="control_item" alt="icon rename">
-               </a>
-           </td>
+            <td>
+                <a href="javascript:void(0);" title="rename {{ name }}" data-action="rename" data-name={{ name }} data-path="{{ data.path }}" class="d-none btn">
+                    <img src="{{ FM_REL_PATH }}css/img/control/edit.png" width="35px" class="control_item" alt="icon rename">
+                </a>
+            </td>
 
-          <td class="file_size selectable">{{ data.size }}</td>
+            <td class="file_size selectable">{{ data.size }}</td>
 
-          <td class="file_change_date selectable">{{ data.fileChangeDate }}</td>
-       </tr>
+            <td class="file_change_date selectable">{{ data.fileChangeDate }}</td>
+        </tr>
     {% endfor %}
 {% else %}
 

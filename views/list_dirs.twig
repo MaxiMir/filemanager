@@ -9,11 +9,11 @@
                 </a>
 
 
-            <a href="{{ data['relPath'] }}" class="list_path-link navigation-link{% if data['isEmptyDir'] == 'Y' %} empty-dir{% endif %}">
-                <img src="{{ FM_REL_PATH }}css/img/control/folder-icon.png" width="15px" alt="icon">
-                <span class="font-weight-bold">{{ name }}</span>
-            </a>
-        </li>
+                <a href="{{ data['relPath'] }}" class="list_path-link navigation-link{% if data['isEmptyDir'] == 'Y' %} empty-dir{% endif %}">
+                    <img src="{{ FM_REL_PATH }}css/img/control/folder-icon.png" width="15px" alt="icon">
+                    <span class="font-weight-bold">{{ name }}</span>
+                </a>
+            </li>
 
         {% endfor %}
     </ul>

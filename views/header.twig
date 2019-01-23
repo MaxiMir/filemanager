@@ -40,38 +40,41 @@
                             </ul>
                         {%endblock%}
                         <form class="form-inline my-2 my-lg-0">
-                            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+                            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" required>
+                            <button class="btn btn-outline-info my-2 my-sm-0" type="submit" id="searchBtn">Search</button>
                         </form>
                     </div>
                 </nav>
-                <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
-                    <div class="navbar-checkboxs">
-                        <div class="navbar-checkboxs-item">
-                            <input type="checkbox" id="searchInCurrDir" checked>
-                            <label class="form-check-label" for="searchInCurrDir" checked="checked">Search in current directory</label>
-                        </div>
-                        <div class="navbar-checkboxs-item position-relative searchByName_block">
-                            <input type="checkbox" id="searchByName">
-                            <label class="form-check-label" for="searchByName">Search by file name</label>
-                            <div class="searchByName_block_icon">
-                                <img src="/fm/css/img/control/info.png" alt="" width="20px">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-secondary d-none" id="searchPanel">
+                    <form id="searchForm">
+                        <div class="navbar-checkboxs">
+                            <div class="navbar-checkboxs-item">
+                                <input type="checkbox" name="searchOptions[]" id="searchInCurrDir" value="searchInCurrDir">
+                                <label class="form-check-label" for="searchInCurrDir">Search in current directory</label>
                             </div>
-                            <div class="searchByName_block_text">
-                                <p class="searchByName_block_text-header">Options for searching by file name:</p>
-                                <p><span>?</span> - replaces any character</p>
-                                <p><span>*</span> - replaces any character set</p>
+                            <div class="navbar-checkboxs-item position-relative searchByName_block">
+                                <input type="checkbox" name="searchOptions[]" id="searchByName" value="searchByName">
+                                <label class="form-check-label" for="searchByName">Search by file name</label>
+                                <div class="searchByName_block_icon">
+                                    <img src="/fm/css/img/control/info.png" alt="" width="20px">
+                                </div>
+                                <div class="searchByName_block_text">
+                                    <p class="searchByName_block_text-header">Options for searching by file name:</p>
+                                    <p><span>?</span> - replaces any character</p>
+                                    <p><span>*</span> - replaces any character set</p>
+                                </div>
                             </div>
+                            <div class="navbar-checkboxs-item">
+                                <input type="checkbox" name="searchOptions[]" id="contentSearch" value="contentSearch" checked>
+                                <label class="form-check-label" for="contentSearch">Content search</label>
+                            </div>
+                            <div class="navbar-checkboxs-item">
+                                <input type="checkbox" name="searchOptions[]" id="caseInsensitiveSearch" value="caseInsensitiveSearch">
+                                <label class="form-check-label" for="caseInsensitiveSearch">Case-insensitive search</label>
+                            </div>
+                            <span id="closeSearch">&#10006</span>
                         </div>
-                        <div class="navbar-checkboxs-item">
-                            <input type="checkbox" id="contentSearch" checked>
-                            <label class="form-check-label" for="contentSearch">Content search</label>
-                        </div>
-                        <div class="navbar-checkboxs-item">
-                            <input type="checkbox" id="сaseInsensitiveSearch">
-                            <label class="form-check-label" for="сaseInsensitiveSearch">Сase-insensitive search</label>
-                        </div>
-                    </div>
+                    </form>
                 </nav>
             </div>
         </div>
