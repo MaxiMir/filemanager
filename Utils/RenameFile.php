@@ -6,7 +6,7 @@
 
     use \FM\Render\HtmlMarkup;
     use \FM\FileData\FileFunc;
-    use \FM\FileData\PathInfo;
+    use \FM\FileData\Path;
 
     class RenameFile implements UtilsInterface
     {
@@ -50,7 +50,7 @@
                 $this->data['msg'] = 'Failed to rename file';
             } else {
                 $this->data['result'] = 'success';
-                $path = new PathInfo($this->parentDir);
+                $path = new Path($this->parentDir);
                 $contentData = $path->getContentData();
                 $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
             }

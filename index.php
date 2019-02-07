@@ -5,12 +5,12 @@
     use \Slim\App;
     use \Psr\Http\Message\ServerRequestInterface as Request;
     use \Psr\Http\Message\ResponseInterface as Response;
-    use FM\FileData\PathInfo;
+    use FM\FileData\Path;
     use FM\Render\HtmlMarkup;
 
     $configuration = [
         'settings' => [
-            'displayErrorDetails' =>    true
+            'displayErrorDetails' => true
         ]
     ];
     
@@ -19,15 +19,15 @@
     $app->get('/[{url:.*}]', function (Request $request, Response $response, $args) {
         $queryParam = $request->getQueryParam('url', '');
         $currPath = ROOT . $queryParam;
-        $path = new PathInfo($currPath);
+        $path = new Path($currPath);
 
         if (!$path->isvalidPath()) {
-            $html = HtmlMarkup::generate('404.twig');
+            $htmlMarkup = HtmlMarkup::generate('404.twig');
             return $response->withStatus(404)
                 ->withHeader('Content-Type', 'text/html')
-                ->write($html);
+                ->write($htmlMarkup);
         } else {
-            $tmpl = $path->chooseTemplate();
+            $tmpl = $path->getTemplate();
             $header = $path->getHeader();
             $breadcrumbs = $path->generateBreadcrumbs();
             $contentData = $path->getContentData();
@@ -39,13 +39,12 @@
                 'contentData' => $contentData
             ];
 
-            $html = HtmlMarkup::generate($tmpl, $data);
-            return $response->write($html);
+           $htmlMarkup = HtmlMarkup::generate($tmpl, $data);
+           return $response->write($htmlMarkup);
         }
     });
 
     $app->run();
-
 
     /* TODO:
         * при наведении на левое меню скролл
@@ -54,7 +53,6 @@
         * увеличение шрифтов в редакторе, сохранение для пользователя параметров
         * картинки без перехода на страницу + превью.
         * верстка
-
-        -> https://github.com/slimphp/Twig-View
+        * минификация css, js
         -> http://slimframework.ru/objects/router
     */

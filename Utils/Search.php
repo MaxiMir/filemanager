@@ -5,6 +5,7 @@
     require_once '../../vendor/autoload.php';
 
     use FM\Render\HtmlMarkup;
+    use FM\FileData\FileInfo;
     use FM\FileData\FileFunc;
 
     class Search implements UtilsInterface
@@ -49,7 +50,7 @@
                     if (!empty($relPath)) {
                         $fullPath = ROOT . trim($relPath);
                         $acc[$relPath]['href'] = '/' . FM_FOLDER_NAME . '/' . FileFunc::getRelUrl($fullPath);
-                        $acc[$relPath]['src'] = is_dir($fullPath) ? FM_REL_PATH . 'css/img/folder.png' : FileFunc::chooseImg($fullPath);
+                        $acc[$relPath]['src'] = is_dir($fullPath) ? FM_REL_PATH . 'css/img/folder.png' : FileInfo::chooseImg($fullPath);
                     }
                     return $acc;
                 }, []);
@@ -66,7 +67,7 @@
 
                         if (empty($acc[$relPath]['href']) && empty($acc[$relPath]['src'])) {
                             $acc[$relPath]['href'] = '/'. FM_FOLDER_NAME . '/' . FileFunc::getRelUrl($fullPath) . "#find=" . base64_encode($searchPhrase);
-                            $acc[$relPath]['src'] = FileFunc::chooseImg($fullPath);
+                            $acc[$relPath]['src'] = FileInfo::chooseImg($fullPath);
                         }
                         $text = trim(str_replace("{$relPath}:", '', $dataPath));
                         $acc[$relPath]['text'][] = $text;

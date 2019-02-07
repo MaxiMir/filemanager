@@ -4,6 +4,7 @@
 
     require_once '../../vendor/autoload.php';
 
+    use FM\FileData\Path;
     use \FM\Render\HtmlMarkup;
     use \FM\FileData\FileFunc;
 
@@ -34,7 +35,8 @@
                 if (!file_exists($path)) {
                     $this->data['msg'] = "Path is not exists: {$path}";
                 } else {
-                    $contentData = FileFunc::getPathsData($path, $this->currDir);
+                	$path = new Path($path);
+                    $contentData = $path->getPathsData($this->currDir);
                     $this->data['content'][$path] = HtmlMarkup::generate('list_dirs.twig', ['contentData' => ['listDirsData' => $contentData]]);
                 }
             }

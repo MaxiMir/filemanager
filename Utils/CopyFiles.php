@@ -2,14 +2,14 @@
 
 namespace FM\Utils;
 
-/*
+
 require_once '../../vendor/autoload.php';
 
 use FM\Render\HtmlMarkup;
 use FM\FileData\FileFunc;
-use FM\FileData\PathInfo;
+use FM\FileData\Path;
 
-
+/*
 class CopyFiles implements UtilsInterface
 {
     use Json;
@@ -89,10 +89,6 @@ class CopyFiles implements UtilsInterface
     }
 }
 }
-*/
-
-
-
 */
         
 

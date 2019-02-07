@@ -6,7 +6,7 @@
 
     use FM\Render\HtmlMarkup;
     use FM\FileData\FileFunc;
-    use FM\FileData\PathInfo;
+    use FM\FileData\Path;
 
     class UploadsFiles implements UtilsInterface
     {
@@ -42,7 +42,7 @@
 
             if ($this->data['msg'] == '') {
                 $this->data['result'] = 'success';
-                $path = new PathInfo($this->parentDir);
+                $path = new Path($this->parentDir);
                 $contentData = $path->getContentData();
                 $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
             }

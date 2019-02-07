@@ -5,8 +5,7 @@
     require_once '../../vendor/autoload.php';
 
     use \FM\Render\HtmlMarkup;
-    use \FM\FileData\FileFunc;
-    use \FM\FileData\PathInfo;
+    use \FM\FileData\Path;
 
     class DeleteFiles implements UtilsInterface
     {
@@ -39,7 +38,7 @@
         {
             foreach ($this->pathFiles as $path) {
                 if (file_exists($path)) {
-                    is_dir($path) ? FileFunc::delDir($path) : unlink($path);
+                    is_dir($path) ? Path::delDir($path) : unlink($path);
                 }
             }
 
@@ -51,7 +50,7 @@
                 $this->data['msg'] = 'Error deleting files: ' . implode(', ', $notDeletedFiles);
             } else {
                 $this->data['result'] = 'success';
-                $path = new PathInfo($this->parentDir);
+                $path = new Path($this->parentDir);
                 $contentData = $path->getContentData();
                 $this->data['content'] = HtmlMarkup::generate('table_files.twig', ['contentData' => $contentData]);
             }
