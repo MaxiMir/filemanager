@@ -35,7 +35,7 @@
                     $size = FileFunc::getDirSize($path);
                 } elseif ($type == 'files') {
                     $size = sprintf("%u", filesize($path));
-                    $dataSet[$type][$fileName]['img'] = FileFunc::chooseImg($path);
+                    $dataSet[$type][$fileName]['img'] = FileInfo::chooseImg($path);
                 }
 
                 $dataSet[$type][$fileName]['size'] = FileFunc::formatFileSize($size);

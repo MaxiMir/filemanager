@@ -2,7 +2,7 @@
 
     namespace FM\FileData;
 
-    class Path implements PathInfoInterFace
+    class Path implements PathInterFace
     {
         private $path;
         private $isDir;

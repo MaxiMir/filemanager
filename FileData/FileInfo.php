@@ -16,6 +16,17 @@
             return pathinfo($this->fPath, PATHINFO_EXTENSION);
         }
 
+        public static function chooseImg($fPath)
+        {
+            $fileExt = trim(pathinfo($fPath, PATHINFO_EXTENSION));
+
+            if (file_exists(FM_PATH . "css/img/{$fileExt}.png")) {
+                return FM_REL_PATH . "css/img/{$fileExt}.png";
+            } else {
+                return FM_REL_PATH . 'css/img/default.png';
+            }
+        }
+
         public function getFileContent()
         {
             $content = [];

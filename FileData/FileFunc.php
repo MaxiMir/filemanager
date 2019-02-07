@@ -15,7 +15,10 @@
         {
             $size = 0;
 
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($fpath, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
+            $iterator = new \RecursiveIteratorIterator(
+               new \RecursiveDirectoryIterator($fpath, \FilesystemIterator::SKIP_DOTS),
+               \RecursiveIteratorIterator::CHILD_FIRST
+            );
 
             foreach ($iterator as $filename => $fileInfo) {
                 if ($fileInfo->isFile()) {
@@ -24,17 +27,6 @@
             }
 
             return $size;
-        }
-
-        public static function chooseImg($fPath)
-        {
-            $fileExt = trim(pathinfo($fPath, PATHINFO_EXTENSION));
-
-            if (file_exists(FM_PATH . "css/img/{$fileExt}.png")) {
-                return FM_REL_PATH . "css/img/{$fileExt}.png";
-            } else {
-                return FM_REL_PATH . 'css/img/default.png';
-            }
         }
 
         public static function formatFileSize($numberOfBytes)
@@ -87,37 +79,5 @@
 
             return htmlspecialchars(trim($data));
         }
-
-        public static function delDir($fPath)
-        {
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($fPath, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
-
-            foreach ($iterator as $filename => $fileInfo) {
-                if ($fileInfo->isDir()) {
-                    rmdir($filename);
-                } else {
-                    unlink($filename);
-                }
-            }
-
-            rmdir($fPath);
-        }
-
-        public static function getPathsData($path = ROOT, $currDir = null)
-        {
-            $pathInfo = new PathInfo($path);
-            $paths = $pathInfo->getFilesPaths(true);
-
-            return array_reduce($paths, function ($acc, $path) use ($currDir) {
-                $fName = basename($path);
-                $relPath = str_replace(ROOT, "/".FM_FOLDER_NAME."/", $path);
-                $isEmptyDir = empty(glob("{$path}/*", GLOB_ONLYDIR)) ? 'Y' : 'N';
-                $acc[$fName] = [
-                    "path" => "{$path}/",
-                    "relPath" => "{$relPath}/",
-                    "isEmptyDir" => $isEmptyDir,
-                ];
-                return $acc;
-            }, []);
-        }
+        
     }

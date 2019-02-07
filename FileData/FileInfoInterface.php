@@ -6,4 +6,5 @@
     {
         public function getExtension();
         public function getFileContent();
+        public static function chooseImg($fPath);
     }
