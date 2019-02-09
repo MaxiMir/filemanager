@@ -3,9 +3,9 @@
     namespace FM\Utils;
 
     require_once '../../vendor/autoload.php';
-
-    use FM\FileData\Path;
+    
     use \FM\Render\HtmlMarkup;
+    use FM\FileData\Path;
     use \FM\FileData\FileFunc;
 
     class GetListDirs implements UtilsInterface
@@ -22,7 +22,6 @@
             } else {
                 $relativePath = FileFunc::getRelPath($_SERVER['HTTP_REFERER']);
                 $this->currDir = ROOT . $relativePath;
-
                 $this->paths = FileFunc::cleanData($_POST['paths']);
                 $this->run();
             }
@@ -31,18 +30,14 @@
         private function run()
         {
             foreach ($this->paths as $path) {
-
                 if (!file_exists($path)) {
                     $this->data['msg'] = "Path is not exists: {$path}";
                 } else {
-                	$path = new Path($path);
-                    $contentData = $path->getPathsData($this->currDir);
+                	$pathObj = new Path($path);
+                    $contentData = $pathObj->getPathsData($this->currDir);
                     $this->data['content'][$path] = HtmlMarkup::generate('list_dirs.twig', ['contentData' => ['listDirsData' => $contentData]]);
+	                $this->data['result'] = 'success';
                 }
-            }
-
-            if ($this->data['msg'] === '') {
-                $this->data['result'] = 'success';
             }
         }
     }
