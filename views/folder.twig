@@ -22,9 +22,9 @@
             <div class="block-list_paths" id="list_paths">
                 <a href="{{ FM_REL_PATH }}" id="root" class="list-group-item list_paths-header list-group-item-dark text-white text-center font-weight-bold">{{ ROOT }}</a>
                 {%include 'list_dirs.twig'%}
-                <div class="list-group-item-dark text-center p-2 d-none">
-                    <button type="button" class="btn btn-secondary btn-sm btn-cancel disabled">CANCEL</button>
-                    <button type="submit" class="btn btn-primary btn-sm btn-ok disabled">INSERT</button>
+                <div class="list-group-item-dark text-center p-2 list_paths__btns d-none">
+                    <button type="button" class="btn btn-secondary btn-sm btn-cancel" disabled>CANCEL</button>
+                    <button type="submit" class="btn btn-primary btn-sm btn-ok" disabled>INSERT</button>
                 </div>
             </div>
         </div>
@@ -61,12 +61,12 @@
                     </tr>
                     <tr id="actions-panel" class="d-none">
                         <th colspan="6">
-                            <a href="javascript:void(0);" title="copy files" class="actions-panel-item btn disabled">
+                            <a href="javascript:void(0);" title="copy files" data-action="copy" class="actions-panel-item btn disabled">
                                 <img src="{{ FM_REL_PATH }}css/img/control/copy.png" class="control_item" width="30px" alt="icon copy">
                                 <p class="copy-text">Copy files</p>
                             </a>
 
-                            <a href="javascript:void(0);" title="move files" class="actions-panel-item btn disabled">
+                            <a href="javascript:void(0);" title="move files" data-action="move" class="actions-panel-item btn disabled">
                                 <img src="{{ FM_REL_PATH }}css/img/control/move.png" class="control_item" width="30px" alt="icon move">
                                 <p class="move-text">Move Files</p>
                             </a>
